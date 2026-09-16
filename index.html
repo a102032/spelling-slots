@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Spelling Slots</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#240a33">
+<link rel="icon" type="image/png" sizes="48x48" href="icons/favicon-48.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Bungee&family=Bungee+Shade&display=swap" rel="stylesheet">
+<style>
+:root{
+  --plum:#240a33; --plum2:#3b1152;
+  --velvet:#8c1027; --velvet-dark:#4e0714;
+  --gold:#f5b81c; --gold-light:#ffe28a; --gold-dark:#a86b00;
+  --bulb:#fff3c4; --reel:#fffdf6; --ink:#1d1330;
+  --neon:#ff4fb8; --mint:#22c870;
+  --display:'Bungee', Impact, 'Arial Black', sans-serif;
+  --shade:'Bungee Shade', 'Bungee', Impact, 'Arial Black', sans-serif;
+  --reader:'Andika', 'Century Gothic', 'Comic Sans MS', system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --plum:#240a33; --reel:#fffdf6; } }
+:root[data-theme="dark"]{ --plum:#240a33; --reel:#fffdf6; }
+
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{
+  height:100dvh; overflow:hidden; color:#fff; font-family:var(--reader);
+  background:radial-gradient(ellipse at 50% 38%, #5a1a78 0%, var(--plum) 58%, #12051a 100%);
+  touch-action:manipulation; user-select:none; -webkit-user-select:none; -webkit-tap-highlight-color:transparent;
+}
+body::before{
+  content:""; position:fixed; inset:0; pointer-events:none;
+  background-image:
+    repeating-linear-gradient(45deg, rgba(255,255,255,.035) 0 2px, transparent 2px 44px),
+    repeating-linear-gradient(-45deg, rgba(255,255,255,.035) 0 2px, transparent 2px 44px);
+}
+button{font:inherit}
+
+.app{
+  position:relative; height:100%; display:grid; grid-template-rows:auto 1fr auto;
+  padding:2.2vh 2vw 1.6vh; gap:1vh;
+  --cell:clamp(58px, 13.2vh, 170px);
+}
+.app.shake{animation:shake .45s 2}
+@keyframes shake{0%,100%{transform:translate(0)}25%{transform:translate(-8px,4px)}50%{transform:translate(7px,-5px)}75%{transform:translate(-4px,-3px)}}
+
+/* ---------- Marquee ---------- */
+.marquee{
+  justify-self:center; position:relative; padding:1.1vh 4.5vw;
+  border-radius:999px; background:linear-gradient(#b3122f, var(--velvet-dark));
+  border:5px solid var(--gold);
+  box-shadow:0 0 0 4px var(--gold-dark), 0 1vh 3vh rgba(0,0,0,.5), inset 0 0 22px rgba(0,0,0,.55);
+}
+.marquee h1{
+  margin:0; font-family:var(--shade); font-weight:400; white-space:nowrap;
+  font-size:clamp(26px, 6.6vh, 84px); line-height:1.1; color:var(--gold-light);
+  text-shadow:0 0 18px rgba(255,200,60,.65);
+}
+.bulbs{position:absolute; left:7%; right:7%; display:flex; justify-content:space-between; pointer-events:none}
+.bulbs.top{top:-10px} .bulbs.bottom{bottom:-10px}
+.bulbs i{
+  width:14px; height:14px; border-radius:50%; background:var(--bulb);
+  box-shadow:0 0 8px 3px rgba(255,220,120,.9); animation:chase 1s steps(1) infinite;
+}
+.bulbs i:nth-child(even){animation-delay:.5s}
+.app.win .bulbs i{animation-duration:.22s}
+@keyframes chase{0%{opacity:1}50%{opacity:.25;box-shadow:none}}
+
+/* ---------- List button + picker ---------- */
+.listbtn,.modebtn{
+  position:absolute; top:2.2vh; left:2vw; z-index:5; display:flex; flex-direction:column; align-items:flex-start; gap:2px;
+  min-height:60px; max-width:22vw; padding:.45em 1em; border-radius:18px; border:3px solid var(--gold); cursor:pointer; text-align:left;
+  background:linear-gradient(#4f186c,#2c0c3f); color:#fff; box-shadow:0 5px 0 var(--gold-dark);
+}
+.modebtn{left:auto; right:2vw; align-items:center; justify-content:center}
+.listbtn:active,.modebtn:active{transform:translateY(4px); box-shadow:0 1px 0 var(--gold-dark)}
+.modebtn:focus-visible,.listbtn:focus-visible{outline:4px solid var(--gold-light); outline-offset:3px}
+.lb-label{font-family:var(--display); color:var(--gold-light); font-size:clamp(14px, 2.6vh, 28px); white-space:nowrap}
+.listbtn .lb-label::after{content:" ▾"}
+.lb-focus{font-family:var(--reader); font-weight:700; font-size:clamp(12px, 1.9vh, 20px); opacity:.9; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%}
+.picker{position:fixed; inset:0; z-index:40; display:grid; place-items:center; padding:3vh 3vw; background:rgba(10,2,18,.82)}
+.picker[hidden]{display:none}
+.picker-panel{width:min(1200px, 100%); max-height:100%; overflow:auto; padding:2.5vh 2.5vw 3vh; border-radius:26px; background:var(--plum2); border:5px solid var(--gold); box-shadow:0 0 0 4px var(--gold-dark)}
+.picker-head{display:flex; justify-content:space-between; align-items:center; gap:1em; margin-bottom:2.5vh}
+.picker-head h2{margin:0; font-family:var(--display); font-weight:400; color:var(--gold-light); font-size:clamp(22px, 4.5vh, 46px)}
+#pickerClose{flex:none; width:64px; height:64px; border-radius:50%; border:3px solid var(--gold); background:transparent; color:#fff; font-size:28px; cursor:pointer}
+.cards{display:grid; grid-template-columns:repeat(auto-fill, minmax(250px, 1fr)); gap:2.4vh 1.5vw; padding-top:12px}
+.card{
+  position:relative; display:flex; flex-direction:column; gap:.35em; min-height:150px; padding:2vh 1.2vw; text-align:left; cursor:pointer;
+  border:4px solid transparent; border-radius:20px; color:#fff; font-family:var(--reader);
+  background:linear-gradient(160deg, #c81c3e, var(--velvet-dark)); box-shadow:0 6px 0 #2a040b;
+}
+.card.custom{background:linear-gradient(160deg, #1c6fd6, #0d3f82); box-shadow:0 6px 0 #062348}
+.card:active{transform:translateY(4px)}
+.card.active{border-color:var(--gold-light); box-shadow:0 0 0 4px var(--gold), 0 6px 0 #2a040b}
+.card:focus-visible{outline:4px solid #fff; outline-offset:4px}
+.c-num{font-family:var(--display); font-size:clamp(20px, 3.6vh, 36px); color:var(--gold-light)}
+.c-focus{font-weight:700; font-size:clamp(16px, 2.5vh, 26px)}
+.c-dates,.c-words{font-size:clamp(13px, 1.9vh, 19px); opacity:.85}
+.badge{position:absolute; top:-14px; right:14px; padding:4px 12px; border-radius:999px; background:var(--gold); color:var(--ink); font-family:var(--display); font-size:14px}
+
+/* ---------- Typing mode ---------- */
+.answer,.keyboard{display:none}
+.app.typing{--cell:clamp(36px, 7.6vh, 100px); grid-template-rows:auto 1fr auto auto; gap:.5vh; padding-bottom:0}
+.app.typing .marquee{padding:.4vh 3vw}
+.app.typing .marquee h1{font-size:clamp(20px, 4.4vh, 60px)}
+.app.typing .reel.sym,.app.typing .lever,.app.typing .controls{display:none}
+.app.typing .reel.word{width:min(62vw, calc(var(--cell)*6.5))}
+.app.typing .cabinet{padding-bottom:calc(var(--cell)*.22)}
+.app.typing .answer{display:flex}
+.app.typing .keyboard{display:grid}
+
+.answer{flex-direction:column; align-items:center; justify-content:center; gap:.6vh; min-height:13vh}
+.answer-msg{font-family:var(--display); color:var(--gold-light); font-size:clamp(14px, 2.5vh, 28px); min-height:1.25em; text-align:center; text-shadow:0 2px 0 rgba(0,0,0,.4)}
+.boxes{display:flex; gap:min(.8vw, 1.2vh); min-height:min(9.5vh, 7vw)}
+.box{
+  --b:min(9.5vh, 7vw); width:calc(var(--b)*.86); height:var(--b); border-radius:12px; text-align:center;
+  border:4px dashed rgba(255,226,138,.5); background:rgba(255,255,255,.06); color:var(--ink);
+  font:700 calc(var(--b)*.62)/calc(var(--b) - 8px) var(--reader);
+}
+.box b,.key b{position:relative; top:var(--nudge, 0em); font-weight:inherit}
+.box.next{border-style:solid; border-color:var(--gold-light); animation:caret 1s steps(1) infinite}
+@keyframes caret{50%{border-color:rgba(255,226,138,.2)}}
+.box.filled{background:var(--reel); border:4px solid var(--gold); box-shadow:0 5px 0 var(--gold-dark)}
+.box.good{background:#c9f7dc; border-color:var(--mint); box-shadow:0 5px 0 #0a5e31}
+.box.shown-answer{background:#ffe7c2; border-color:#ee7a00; box-shadow:0 5px 0 #8a4200}
+.box.pop{animation:boxPop .18s ease-out}
+@keyframes boxPop{50%{transform:scale(1.15)}}
+.boxes.wiggle{animation:wiggle .5s}
+@keyframes wiggle{20%{transform:translateX(-16px)}40%{transform:translateX(13px)}60%{transform:translateX(-9px)}80%{transform:translateX(5px)}}
+
+.keyboard{
+  --k:min(6.2vw, 10vh); --g:1vh;
+  justify-self:center; align-self:end; grid-template-columns:auto auto auto; gap:1.2vw;
+  padding:1.5vh 1.5vw 2vh; border-radius:26px 26px 0 0;
+  background:linear-gradient(#5e1433, #2d0718); border:5px solid var(--gold); border-bottom:0;
+  box-shadow:0 -1vh 3vh rgba(0,0,0,.45);
+}
+.kb-rows{display:flex; flex-direction:column; gap:var(--g); align-items:center}
+.kb-row{display:flex; gap:min(.7vw, 1.1vh)}
+.key{
+  width:var(--k); height:var(--k); padding:0; border:0; border-radius:16px; cursor:pointer; text-align:center;
+  background:linear-gradient(#fffdf6, #efe4c8); color:var(--ink); box-shadow:0 .7vh 0 #b08a3a;
+  font:700 calc(var(--k)*.6)/var(--k) var(--reader);
+}
+.key:active,.key.pressed{transform:translateY(.6vh); box-shadow:0 .1vh 0 #b08a3a; background:var(--gold-light)}
+.key:focus-visible,.kb-btn:focus-visible{outline:4px solid #fff; outline-offset:2px}
+.kb-side{display:flex; flex-direction:column; gap:var(--g)}
+.kb-btn{
+  --shadow:#000; width:calc(var(--k)*1.9); height:calc((var(--k)*3 + var(--g)) / 2); border:0; border-radius:18px; cursor:pointer; color:#fff;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.1em;
+  font-family:var(--display); font-size:calc(var(--k)*.4); line-height:1; box-shadow:0 .7vh 0 var(--shadow); text-shadow:0 2px 0 rgba(0,0,0,.3);
+}
+.kb-btn span{font-family:var(--reader); font-weight:700; font-size:.62em}
+.kb-btn:active:not(:disabled){transform:translateY(.6vh); box-shadow:0 .1vh 0 var(--shadow)}
+.kb-btn:disabled{filter:grayscale(.85) brightness(.6); cursor:default}
+.kb-hear{background:linear-gradient(#52aaff,#1c6fd6); --shadow:#0d3f82}
+.kb-spin{background:radial-gradient(circle at 35% 30%, #ff7070, #d4102b 60%, #8e0619); --shadow:#5c0410; border:4px solid var(--gold)}
+.kb-del{background:linear-gradient(#9a9ab0,#5e5e74); --shadow:#2f2f3d}
+.kb-done{background:linear-gradient(#45e892,#15a458); --shadow:#0a5e31}
+
+/* ---------- Machine ---------- */
+.machine{display:flex; align-items:center; justify-content:center; gap:1vw; min-height:0}
+.cabinet{
+  position:relative; display:flex; flex-direction:column; align-items:center;
+  padding:.6vh calc(var(--cell)*.28) calc(var(--cell)*.3);
+  border-radius:40px 40px 28px 28px;
+  background:linear-gradient(160deg, #c81c3e, var(--velvet) 42%, var(--velvet-dark));
+  border:6px solid var(--gold);
+  box-shadow:0 0 0 5px var(--gold-dark), 0 3vh 6vh rgba(0,0,0,.6), inset 0 3px 0 rgba(255,255,255,.3);
+}
+.sign{
+  font-family:var(--display); height:calc(var(--cell)*.8); line-height:calc(var(--cell)*.8);
+  font-size:calc(var(--cell)*.56); color:#ffe0f3; white-space:nowrap;
+  text-shadow:0 0 6px var(--neon), 0 0 18px var(--neon), 0 0 40px var(--neon);
+}
+.sign.idle{font-size:calc(var(--cell)*.32); opacity:.6; text-shadow:0 0 6px var(--neon), 0 0 14px var(--neon)}
+.sign.off{opacity:0}
+.sign.pop{animation:pop .6s cubic-bezier(.2,1.7,.4,1) both, flicker 1.6s .8s infinite}
+@keyframes pop{0%{transform:scale(0) rotate(-14deg)}100%{transform:scale(1) rotate(0)}}
+@keyframes flicker{0%,88%,100%{opacity:1}90%{opacity:.5}93%{opacity:1}95%{opacity:.7}}
+
+.window{
+  position:relative; display:flex; gap:calc(var(--cell)*.12); padding:calc(var(--cell)*.13);
+  border-radius:22px; background:linear-gradient(#2c2c2c,#0c0c0c);
+  box-shadow:inset 0 4px 14px rgba(0,0,0,.9), 0 0 0 4px #dcdcdc, 0 0 0 8px #7d7d7d;
+}
+.reel{position:relative; height:calc(var(--cell)*3); overflow:hidden; border-radius:12px; background:var(--reel); --pos:1}
+.reel::after{
+  content:""; position:absolute; inset:0; pointer-events:none; z-index:3;
+  background:
+    linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,0) 30%, rgba(0,0,0,0) 70%, rgba(0,0,0,.6)),
+    linear-gradient(90deg, rgba(0,0,0,.2), transparent 12%, transparent 88%, rgba(0,0,0,.2));
+}
+.reel.sym{width:calc(var(--cell)*1.25)}
+.reel.word{width:min(54vw, calc(var(--cell)*5))}
+.strip{position:absolute; left:0; right:0; top:0; transform:translateY(calc((1 - var(--pos)) * var(--cell))); will-change:transform}
+.reel.fast .strip{filter:blur(1.6px)}
+.cell{height:var(--cell); display:flex; align-items:center; justify-content:center; border-bottom:2px dashed rgba(29,19,48,.09)}
+.word .cell{font-family:var(--reader); font-weight:700; font-size:calc(var(--cell)*.68); color:var(--ink); line-height:1}
+.sym .cell{font-size:calc(var(--cell)*.58); line-height:1}
+.seven{font-family:var(--display); color:#e0112f; text-shadow:3px 3px 0 var(--gold)}
+
+.payline{position:absolute; left:0; right:0; top:50%; height:0; pointer-events:none; z-index:4}
+.payline::before,.payline::after{
+  content:""; position:absolute; top:-18px; border-top:18px solid transparent; border-bottom:18px solid transparent;
+  filter:drop-shadow(0 2px 2px rgba(0,0,0,.6));
+}
+.payline::before{left:-14px; border-left:26px solid var(--gold)}
+.payline::after{right:-14px; border-right:26px solid var(--gold)}
+.window.win .reel.word{animation:glow .45s ease-in-out 6 alternate}
+@keyframes glow{from{box-shadow:inset 0 0 0 0 var(--gold)}to{box-shadow:inset 0 0 0 6px var(--gold), 0 0 34px 6px var(--gold)}}
+
+.word .cell.mystery{
+  font-family:var(--display); font-weight:400; color:var(--gold-light); font-size:calc(var(--cell)*.62);
+  background:repeating-linear-gradient(45deg, var(--velvet) 0 18px, #a8142f 18px 36px);
+  text-shadow:0 4px 0 var(--velvet-dark);
+}
+.word .cell.shown{animation:flipIn .5s cubic-bezier(.2,1.5,.4,1)}
+@keyframes flipIn{0%{transform:rotateX(90deg)}100%{transform:rotateX(0)}}
+.word .cell{transition:opacity .3s}
+.window.landed .word .cell:not(:nth-child(2)){opacity:.25}
+
+/* ---------- Lever ---------- */
+.lever{position:relative; margin-right:calc(-1 * (var(--cell)*.95 + 1vw)); width:calc(var(--cell)*.95); height:calc(var(--cell)*3.6); background:none; border:0; padding:0; cursor:pointer; border-radius:20px}
+.lever:disabled{cursor:default}
+.lever .mount{
+  position:absolute; left:0; bottom:calc(var(--cell)*.35); width:calc(var(--cell)*.6); height:calc(var(--cell)*.8);
+  background:linear-gradient(90deg,#6d6d6d,#f0f0f0 45%,#8a8a8a); border-radius:0 18px 18px 0;
+  box-shadow:0 6px 14px rgba(0,0,0,.5);
+}
+.lever .arm{
+  position:absolute; left:calc(var(--cell)*.3 - 8px); bottom:calc(var(--cell)*.75); width:16px; height:calc(var(--cell)*2.3);
+  background:linear-gradient(90deg,#7a7a7a,#fafafa 50%,#7a7a7a); border-radius:8px; transform-origin:50% 100%;
+}
+.lever .knob{
+  position:absolute; left:calc(var(--cell)*.3 - var(--cell)*.38); bottom:calc(var(--cell)*2.8); width:calc(var(--cell)*.76); height:calc(var(--cell)*.76);
+  border-radius:50%; background:radial-gradient(circle at 35% 30%, #ff8a8a, #e0112f 55%, #7a0515);
+  box-shadow:0 6px 12px rgba(0,0,0,.55);
+}
+.lever.pull .arm{animation:armPull .6s ease-in-out}
+.lever.pull .knob{animation:knobPull .6s ease-in-out}
+@keyframes armPull{0%,100%{transform:scaleY(1)}40%,55%{transform:scaleY(.1)}}
+@keyframes knobPull{0%,100%{transform:translateY(0)}40%,55%{transform:translateY(calc(var(--cell)*2.07))}}
+.lever:focus-visible{outline:4px solid var(--gold-light); outline-offset:4px}
+
+/* ---------- Controls ---------- */
+.controls{display:grid; grid-template-columns:1fr auto auto auto auto 1fr; align-items:center; gap:2.6vw}
+.btn{
+  --shadow:#000; font-family:var(--display); border:0; cursor:pointer; color:#fff;
+  border-radius:999px; min-height:64px; padding:.35em 1.3em; font-size:clamp(18px, 3.6vh, 40px);
+  box-shadow:0 .8vh 0 var(--shadow), 0 1.4vh 2vh rgba(0,0,0,.5);
+  transition:transform .08s, box-shadow .08s, filter .2s; text-shadow:0 2px 0 rgba(0,0,0,.3);
+}
+.btn:active:not(:disabled){transform:translateY(.7vh); box-shadow:0 .1vh 0 var(--shadow), 0 .4vh 1vh rgba(0,0,0,.5)}
+.btn:disabled{filter:grayscale(.85) brightness(.6); cursor:default}
+.btn:focus-visible{outline:4px solid var(--gold-light); outline-offset:5px}
+.spin{
+  width:clamp(104px, 17vh, 210px); height:clamp(104px, 17vh, 210px); padding:0; border-radius:50%;
+  font-size:clamp(26px, 5.2vh, 60px); border:6px solid var(--gold); --shadow:#5c0410;
+  background:radial-gradient(circle at 35% 30%, #ff7070, #d4102b 58%, #8e0619);
+}
+.spin:not(:disabled){animation:breathe 1.8s ease-in-out infinite}
+@keyframes breathe{0%,100%{scale:1}50%{scale:1.06}}
+.hear{background:linear-gradient(#52aaff,#1c6fd6); --shadow:#0d3f82}
+.correct{background:linear-gradient(#45e892,#15a458); --shadow:#0a5e31}
+.reveal{background:linear-gradient(#ffb84a,#ee7a00); --shadow:#8a4200}
+.tally{justify-self:start; display:flex; align-items:center; gap:.5em; font-family:var(--display); color:var(--gold-light); font-size:clamp(14px, 2.5vh, 28px)}
+.coin{width:1.3em; height:1.3em; border-radius:50%; background:radial-gradient(circle at 35% 35%, #fff3b0, var(--gold) 55%, var(--gold-dark)); border:2px solid var(--gold-dark); box-shadow:0 3px 0 var(--gold-dark)}
+.edit{justify-self:end; background:rgba(255,255,255,.1); color:#fff; border:2px solid rgba(255,226,138,.5); border-radius:999px; min-height:52px; padding:0 1.2em; font-family:var(--reader); font-weight:700; font-size:clamp(14px, 2.2vh, 22px); cursor:pointer}
+.edit:focus-visible{outline:4px solid var(--gold-light); outline-offset:3px}
+
+/* ---------- Celebration ---------- */
+.party{position:fixed; inset:0; z-index:50; display:none; place-items:center; overflow:hidden; cursor:pointer;
+  background:radial-gradient(circle, rgba(92,24,122,.9), rgba(15,3,25,.97))}
+.party.on{display:grid; animation:fadein .2s}
+@keyframes fadein{from{opacity:0}}
+.rays{position:absolute; left:50%; top:50%; width:260vmax; height:260vmax; margin:-130vmax 0 0 -130vmax;
+  background:repeating-conic-gradient(rgba(255,210,80,.2) 0deg 9deg, transparent 9deg 18deg); animation:rays 14s linear infinite}
+@keyframes rays{to{transform:rotate(360deg)}}
+.party canvas{position:absolute; inset:0; width:100%; height:100%; z-index:3; pointer-events:none}
+.party-text{position:relative; z-index:2; text-align:center; padding:2vh 3vw}
+.big{font-family:var(--shade); font-size:min(24vh, 12vw); line-height:1; color:var(--gold-light);
+  text-shadow:0 0 34px rgba(255,190,40,.95), 0 10px 0 var(--velvet); animation:slam .75s cubic-bezier(.2,1.8,.4,1) both}
+@keyframes slam{0%{transform:scale(4) rotate(8deg); opacity:0}100%{transform:scale(1); opacity:1}}
+.letters{display:flex; justify-content:center; flex-wrap:wrap; gap:1.4vh; margin-top:4vh}
+.letters span b{position:relative; top:var(--nudge, 0em); font-weight:inherit}
+.letters span{
+  font-family:var(--reader); font-weight:700; font-size:min(13vh, 9vw); width:1.05em; height:1.3em;
+  display:block; text-align:center; line-height:calc(1.3em - 10px); border-radius:.2em; background:var(--reel); color:var(--ink);
+  border:5px solid var(--gold); box-shadow:0 9px 0 var(--gold-dark); animation:drop .55s cubic-bezier(.2,1.7,.4,1) both;
+}
+@keyframes drop{0%{transform:translateY(-60vh) rotate(-30deg); opacity:0}100%{transform:none; opacity:1}}
+.tap{margin-top:5vh; font-family:var(--display); opacity:.75; font-size:clamp(14px, 2.6vh, 28px)}
+
+/* ---------- Settings ---------- */
+dialog{border:5px solid var(--gold); border-radius:22px; background:var(--plum2); color:#fff; padding:26px; width:min(620px, 92vw); font-family:var(--reader)}
+dialog::backdrop{background:rgba(10,2,18,.75)}
+dialog h2{margin:0 0 .4em; font-family:var(--display); font-weight:400; color:var(--gold-light); font-size:30px}
+dialog p{margin:.2em 0 .7em; font-size:18px; opacity:.85}
+dialog textarea{width:100%; min-height:150px; font:700 20px/1.45 var(--reader); border-radius:12px; border:3px solid var(--gold-dark); padding:12px; resize:vertical; user-select:text; -webkit-user-select:text; background:var(--reel); color:var(--ink)}
+.check{display:flex; align-items:center; gap:14px; font-size:21px; margin:14px 0; cursor:pointer}
+.check input{width:30px; height:30px; accent-color:var(--gold)}
+.row{display:flex; gap:12px; justify-content:flex-end; flex-wrap:wrap; margin-top:18px}
+.row button{min-height:56px; padding:0 1.3em; border-radius:999px; font-size:20px; font-weight:700; cursor:pointer; border:2px solid var(--gold); background:transparent; color:#fff; font-family:var(--reader)}
+.row button.primary{background:var(--gold); color:var(--ink)}
+.field{display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin:12px 0; font-size:20px}
+dialog select{min-height:52px; font:700 18px var(--reader); border-radius:10px; padding:0 10px; max-width:100%; flex:1; background:var(--reel); color:var(--ink)}
+dialog .test{min-height:52px; padding:0 1em; border-radius:999px; border:2px solid var(--gold); background:transparent; color:#fff; font:700 19px var(--reader); cursor:pointer}
+.err{color:#ffb3c7; min-height:1.3em; font-size:18px}
+
+@media (max-width:760px){
+  .listbtn,.modebtn{max-width:44vw; min-height:48px; top:1vh}
+  .marquee{margin-top:56px}
+  .reel.sym,.lever{display:none}
+  .reel.word{width:78vw}
+  .controls{grid-template-columns:1fr 1fr; grid-template-areas:"hear reveal" "spin spin" "correct correct" "tally edit"}
+  .hear{grid-area:hear} .reveal{grid-area:reveal} .correct{grid-area:correct; justify-self:center} .spin{grid-area:spin; justify-self:center} .tally{grid-area:tally} .edit{grid-area:edit}
+}
+@media (prefers-reduced-motion: reduce){
+  .rays,.bulbs i,.spin,.sign.pop{animation:none!important}
+  .app.shake{animation:none}
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <button class="modebtn" id="modeBtn"><span class="lb-label">✏️ Type it</span></button>
+  <button class="listbtn" id="listBtn" aria-label="Choose a spelling list"><span class="lb-label">List 1</span><span class="lb-focus">Short a, i</span></button>
+  <header class="marquee">
+    <div class="bulbs top" aria-hidden="true"></div>
+    <h1>Spelling Slots</h1>
+    <div class="bulbs bottom" aria-hidden="true"></div>
+  </header>
+
+  <main class="machine">
+    <div class="cabinet">
+      <div class="sign idle" id="sign" aria-live="polite">Tap spin!</div>
+      <div class="window" id="window">
+        <div class="reel sym" id="reelL" aria-hidden="true"><div class="strip"></div></div>
+        <div class="reel word" id="reelW"><div class="strip"></div></div>
+        <div class="reel sym" id="reelR" aria-hidden="true"><div class="strip"></div></div>
+        <div class="payline" aria-hidden="true"></div>
+      </div>
+    </div>
+    <button class="lever" id="lever" aria-label="Pull the lever to spin">
+      <span class="mount"></span><span class="arm"></span><span class="knob"></span>
+    </button>
+  </main>
+
+  <section class="answer" aria-live="polite">
+    <div class="answer-msg" id="answerMsg">Tap Spin to get a word!</div>
+    <div class="boxes" id="boxes"></div>
+  </section>
+
+  <section class="keyboard" id="keyboard" aria-label="Letter keyboard">
+    <div class="kb-side">
+      <button class="kb-btn kb-hear" id="kbHear">🔊<span>Hear it</span></button>
+      <button class="kb-btn kb-spin" id="kbSpin">Spin!</button>
+    </div>
+    <div class="kb-rows" id="kbRows"></div>
+    <div class="kb-side">
+      <button class="kb-btn kb-del" id="kbDel">⌫<span>Delete</span></button>
+      <button class="kb-btn kb-done" id="kbDone">✔<span>Done</span></button>
+    </div>
+  </section>
+
+  <footer class="controls">
+    <div class="tally"><span class="coin" aria-hidden="true"></span><span id="tally">18 words to go</span></div>
+    <button class="btn hear" id="hear" disabled>🔊 Hear it</button>
+    <button class="btn spin" id="spin">Spin!</button>
+    <button class="btn reveal" id="reveal" disabled>👀 Check</button>
+    <button class="btn correct" id="correct" disabled>✔ Correct!</button>
+    <button class="edit" id="editBtn">⚙ Settings</button>
+  </footer>
+</div>
+
+<div class="party" id="party" role="dialog" aria-label="Celebration">
+  <div class="rays"></div>
+  <canvas id="confetti"></canvas>
+  <div class="party-text">
+    <div class="big" id="big">Jackpot!</div>
+    <div class="letters" id="letters"></div>
+    <div class="tap">Tap anywhere to keep playing</div>
+  </div>
+</div>
+
+<div class="picker" id="picker" hidden>
+  <div class="picker-panel" role="dialog" aria-label="Choose a spelling list">
+    <div class="picker-head"><h2>Pick a spelling list</h2><button id="pickerClose" aria-label="Close">✕</button></div>
+    <div class="cards" id="cards"></div>
+  </div>
+</div>
+
+<dialog id="settings">
+  <h2>Settings</h2>
+  <p><b>My own list (optional).</b> It appears as "My list" in the list picker, on this device only. One word per line, with a practice sentence after a colon, like <b>sad: I feel sad.</b></p>
+  <textarea id="wordsInput" spellcheck="false"></textarea>
+  <div class="err" id="err"></div>
+  <div class="field"><label for="voiceInput">Voice</label><select id="voiceInput"></select><button type="button" class="test" id="testVoice">▶ Test</button></div>
+  <div class="field"><label for="rateInput">Speed</label><select id="rateInput"><option value="0.75">Slow</option><option value="0.9">Medium</option><option value="1">Normal</option></select></div>
+  <label class="check"><input type="checkbox" id="sentenceInput"> Read the practice sentence</label>
+  <label class="check"><input type="checkbox" id="soundInput"> Sound effects</label>
+  <label class="check"><input type="checkbox" id="typingInput"> Start in typing mode on this device</label>
+  <div class="row">
+    <button id="resetWords">Clear my list</button>
+    <button id="cancelSettings">Cancel</button>
+    <button class="primary" id="saveSettings">Save</button>
+  </div>
+</dialog>
+
+<script>
+(() => {
+// =====================================================================
+//  TEACHER SETUP
+//  FORCE_LIST = 0  -> the app picks the list by today's date (normal).
+//  FORCE_LIST = 3  -> always start on List 3, whatever the date.
+//  START_MODE = "speak" -> students say or write the word (normal).
+//  START_MODE = "type"  -> the letter keyboard is open when the app starts.
+// =====================================================================
+const FORCE_LIST = 0;
+const START_MODE = "speak";
+
+// Each list starts on its "start" date and stays active until the next list
+// starts. A list with empty dates is never picked by date, but students can
+// still choose it. To add a list, copy one block and change the details.
+const LISTS = [
+  { name:"List 1", focus:"Short a, i", start:"2026-09-01", end:"2026-09-20", words:[
+    {w:"sad", s:"I feel sad when it rains."},
+    {w:"bit", s:"The dog bit the stick."},
+    {w:"jam", s:"I like jam on my bread."},
+    {w:"glad", s:"I am glad to see you."},
+    {w:"list", s:"Mom made a shopping list."},
+    {w:"win", s:"I want to win the race."},
+    {w:"flat", s:"The bike tire is flat."},
+    {w:"if", s:"Tell me if you need help."},
+    {w:"fix", s:"Dad can fix the chair."},
+    {w:"rip", s:"Do not rip the paper."},
+    {w:"kit", s:"We got a new art kit."},
+    {w:"mask", s:"He wore a funny mask."},
+    {w:"picnic", s:"We had a picnic in the park."},
+    {w:"sandwich", s:"I ate a sandwich for lunch."} ]},
+  { name:"List 2", focus:"Short o, u, e", start:"2026-09-21", end:"2026-10-04", words:[
+    {w:"yes", s:"Yes, I can help you."},
+    {w:"job", s:"My job is to feed the fish."},
+    {w:"hug", s:"Give me a big hug."},
+    {w:"rest", s:"I need to rest after the game."},
+    {w:"frog", s:"The frog jumped into the pond."},
+    {w:"hum", s:"I like to hum a song."},
+    {w:"left", s:"Turn left at the corner."},
+    {w:"melt", s:"The ice will melt in the sun."},
+    {w:"plum", s:"I ate a sweet plum."},
+    {w:"shut", s:"Please shut the door."},
+    {w:"net", s:"He caught a fish with a net."},
+    {w:"dot", s:"Put a dot at the end of the sentence."},
+    {w:"puddle", s:"I jumped in the puddle."},
+    {w:"helmet", s:"Wear a helmet when you ride a bike."} ]},
+  { name:"List 3", focus:"Long a, i (VCe)", start:"2026-10-05", end:"2026-11-01", words:[
+    {w:"cake", s:"We ate cake at the party."},
+    {w:"mine", s:"That red cup is mine."},
+    {w:"plate", s:"Put the food on a plate."},
+    {w:"size", s:"What size are your shoes?"},
+    {w:"ate", s:"I ate all my lunch."},
+    {w:"grape", s:"I ate a green grape."},
+    {w:"prize", s:"She won a prize."},
+    {w:"wipe", s:"Please wipe the table."},
+    {w:"race", s:"Let's run a race."},
+    {w:"line", s:"Please stand in a line."},
+    {w:"pile", s:"There is a big pile of leaves."},
+    {w:"rake", s:"Dad used a rake in the yard."},
+    {w:"mistake", s:"It is okay to make a mistake."},
+    {w:"guide", s:"A guide showed us around the zoo."} ]},
+  { name:"List 4", focus:"Long o, u (VCe)", start:"2026-11-02", end:"2026-11-22", words:[
+    {w:"doze", s:"Grandpa likes to doze in his chair."},
+    {w:"nose", s:"My dog has a wet nose."},
+    {w:"use", s:"Use a pencil to write."},
+    {w:"rose", s:"She gave me a red rose."},
+    {w:"pole", s:"The flag is on a tall pole."},
+    {w:"close", s:"Please close the window."},
+    {w:"June", s:"My birthday is in June."},
+    {w:"woke", s:"I woke up early today."},
+    {w:"rule", s:"Follow the class rule."},
+    {w:"rode", s:"I rode my bike to the park."},
+    {w:"role", s:"She has a big role in the play."},
+    {w:"tune", s:"Sing a happy tune."},
+    {w:"wrote", s:"I wrote a letter to my friend."},
+    {w:"flute", s:"She can play the flute."} ]},
+  { name:"List 5", focus:"Short and Long Vowels", start:"2026-11-23", end:"2026-12-13", words:[
+    {w:"tap", s:"Tap the drum softly."},
+    {w:"tape", s:"Use tape to fix the page."},
+    {w:"fin", s:"The fish has a fin."},
+    {w:"fine", s:"I feel fine today."},
+    {w:"cute", s:"The puppy is so cute."},
+    {w:"ride", s:"I like to ride my bike."},
+    {w:"rob", s:"Do not let the fox rob the eggs."},
+    {w:"robe", s:"I wear a robe after my bath."},
+    {w:"cap", s:"He wore a blue cap."},
+    {w:"cape", s:"The hero has a red cape."},
+    {w:"slid", s:"I slid down the hill."},
+    {w:"slide", s:"Let's go down the slide."},
+    {w:"scrap", s:"Throw the scrap of paper away."},
+    {w:"scrape", s:"I got a scrape on my knee."} ]},
+  { name:"List 6", focus:"Blends with l, r, s", start:"2026-12-14", end:"2026-12-31", words:[
+    {w:"space", s:"Rockets fly into space."},
+    {w:"globe", s:"Spin the globe and find the ocean."},
+    {w:"grade", s:"I am in second grade."},
+    {w:"swim", s:"I can swim in the pool."},
+    {w:"place", s:"This is a good place to sit."},
+    {w:"last", s:"I was last in line."},
+    {w:"test", s:"We have a spelling test."},
+    {w:"skin", s:"Put sunscreen on your skin."},
+    {w:"drag", s:"Do not drag your bag on the floor."},
+    {w:"glide", s:"Birds glide in the sky."},
+    {w:"just", s:"I just ate my lunch."},
+    {w:"stove", s:"The pot is on the stove."},
+    {w:"climb", s:"I like to climb trees."},
+    {w:"bruise", s:"I got a bruise on my arm."} ]},
+
+  // ----- 2nd semester: add each list's dates when you know them, like start:"2027-02-15", end:"2027-03-07" -----
+  { name:"List 7", focus:"Final Blends", start:"", end:"", words:[
+    {w:"next", s:"Who is next in line?"},
+    {w:"end", s:"This is the end of the story."},
+    {w:"camp", s:"We sleep in a tent at camp."},
+    {w:"sank", s:"The toy boat sank in the tub."},
+    {w:"sing", s:"Let's sing a song."},
+    {w:"drink", s:"I drink water every day."},
+    {w:"hunt", s:"Cats like to hunt mice."},
+    {w:"stand", s:"Please stand up."},
+    {w:"long", s:"The snake is very long."},
+    {w:"stamp", s:"Put a stamp on the letter."},
+    {w:"pond", s:"Ducks swim in the pond."},
+    {w:"bring", s:"Bring your book to class."},
+    {w:"friend", s:"Tom is my best friend."},
+    {w:"young", s:"The puppy is very young."} ]},
+  { name:"List 8", focus:"Double Final Consonants", start:"", end:"", words:[
+    {w:"full", s:"My cup is full of juice."},
+    {w:"dress", s:"She wore a pink dress."},
+    {w:"mess", s:"My room is a mess."},
+    {w:"add", s:"Add two and three."},
+    {w:"hill", s:"We ran up the hill."},
+    {w:"pull", s:"Pull the door open."},
+    {w:"spill", s:"Don't spill your juice."},
+    {w:"class", s:"Our class has a pet fish."},
+    {w:"doll", s:"My sister has a new doll."},
+    {w:"kiss", s:"Mom gave me a goodnight kiss."},
+    {w:"fell", s:"The leaf fell from the tree."},
+    {w:"off", s:"Turn off the light."},
+    {w:"address", s:"Write your address on the card."},
+    {w:"across", s:"We walked across the street."} ]},
+  { name:"List 9", focus:"Digraphs sh, th, ch, wh", start:"", end:"", words:[
+    {w:"dish", s:"Put the dish in the sink."},
+    {w:"than", s:"A cat is bigger than a mouse."},
+    {w:"chest", s:"The gold is in the chest."},
+    {w:"such", s:"It was such a fun day."},
+    {w:"thin", s:"The paper is very thin."},
+    {w:"push", s:"Push the swing."},
+    {w:"shine", s:"The stars shine at night."},
+    {w:"chase", s:"Dogs like to chase balls."},
+    {w:"white", s:"Snow is white."},
+    {w:"while", s:"Please wait while I get my coat."},
+    {w:"these", s:"These shoes are new."},
+    {w:"flash", s:"I saw a flash of light."},
+    {w:"whisper", s:"Whisper so the baby can sleep."},
+    {w:"thumb", s:"I hurt my thumb."} ]},
+  { name:"List 10", focus:"Consonants k, ck", start:"", end:"", words:[
+    {w:"milk", s:"I drink milk at breakfast."},
+    {w:"neck", s:"A giraffe has a long neck."},
+    {w:"ask", s:"Ask your teacher for help."},
+    {w:"snake", s:"The snake is green."},
+    {w:"truck", s:"The big truck is loud."},
+    {w:"kick", s:"Kick the ball to me."},
+    {w:"smoke", s:"Smoke came from the fire."},
+    {w:"rock", s:"I sat on a big rock."},
+    {w:"desk", s:"My pencil is on my desk."},
+    {w:"black", s:"My cat is black."},
+    {w:"lake", s:"We swam in the lake."},
+    {w:"trick", s:"My dog can do a trick."},
+    {w:"pocket", s:"I have a coin in my pocket."},
+    {w:"whiskers", s:"My cat has long whiskers."} ]},
+  { name:"List 11", focus:"Long a (ai, ay)", start:"", end:"", words:[
+    {w:"pay", s:"I will pay for the ice cream."},
+    {w:"wait", s:"Please wait for your turn."},
+    {w:"paint", s:"Let's paint a picture."},
+    {w:"train", s:"The train goes fast."},
+    {w:"pail", s:"Fill the pail with sand."},
+    {w:"clay", s:"I made a bowl out of clay."},
+    {w:"tray", s:"Put the cups on the tray."},
+    {w:"plain", s:"I like plain rice."},
+    {w:"stain", s:"There is a stain on my shirt."},
+    {w:"hay", s:"The horse eats hay."},
+    {w:"gray", s:"The sky is gray today."},
+    {w:"away", s:"The bird flew away."},
+    {w:"raisin", s:"I ate a raisin."},
+    {w:"birthday", s:"Today is my birthday."} ]},
+  { name:"List 12", focus:"Long e (ee, ea)", start:"", end:"", words:[
+    {w:"free", s:"The toy was free."},
+    {w:"teach", s:"I can teach you a game."},
+    {w:"teeth", s:"Brush your teeth."},
+    {w:"please", s:"Please pass the salt."},
+    {w:"each", s:"Each child gets a book."},
+    {w:"wheel", s:"My bike has a flat wheel."},
+    {w:"team", s:"Our team won the game."},
+    {w:"speak", s:"Please speak loudly."},
+    {w:"sneeze", s:"Pepper makes me sneeze."},
+    {w:"sheep", s:"The sheep is in the field."},
+    {w:"meaning", s:"What is the meaning of this word?"},
+    {w:"weave", s:"Birds weave their nests."},
+    {w:"between", s:"Sit between Amy and me."},
+    {w:"reason", s:"Tell me the reason you are sad."} ]}
+];
+
+const SYMBOLS = ["🍒","⭐","🔔","💎","🍀",'<span class="seven">7</span>',"🍋"];
+const PRAISE_BIG = ["Jackpot!","Awesome!","Super!","Winner!","Yes!"];
+const KEY = "spellingSlots.v3", OLD_KEY = "spellingSlots.v2";
+const RATES = ["0.75","0.9","1"];
+
+const $ = id => document.getElementById(id);
+const app = $("app"), sign = $("sign"), win = $("window");
+const spinBtn = $("spin"), hearBtn = $("hear"), revealBtn = $("reveal"), correctBtn = $("correct"), lever = $("lever");
+const party = $("party");
+const hasSpeech = "speechSynthesis" in window;
+
+document.querySelectorAll(".bulbs").forEach(b => { for (let i = 0; i < 16; i++) b.appendChild(document.createElement("i")); });
+
+// ---------- settings ----------
+function dedupe(list){ const seen = new Set(); return list.filter(o => o.w && !seen.has(o.w) && seen.add(o.w)); }
+function load(){
+  const base = { custom: [], sentences: true, sound: true, voice: "", rate: 0.9, startTyping: null };
+  try{
+    const s = JSON.parse(localStorage.getItem(KEY));
+    if (s) return { ...base, ...s, custom: Array.isArray(s.custom) ? dedupe(s.custom.filter(o => o && typeof o.w === "string")) : [] };
+    // Older versions: keep voice and sound choices, but not their word list.
+    const old = JSON.parse(localStorage.getItem(OLD_KEY));
+    if (old) return { ...base, sentences: old.sentences !== false, sound: old.sound !== false, voice: old.voice || "", rate: old.rate || 0.9 };
+  }catch(e){}
+  return base;
+}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(settings)); }catch(e){} }
+let settings = load();
+
+function todayISO(){ const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
+function scheduledIndex(){
+  if (FORCE_LIST >= 1 && FORCE_LIST <= LISTS.length) return FORCE_LIST - 1;
+  const t = todayISO(); let idx = 0;
+  LISTS.forEach((l, i) => { if (l.start && l.start <= t) idx = i; });
+  return idx;
+}
+// A list picked by a student lasts only until the page reloads.
+let activeKey = scheduledIndex();
+const activeWords = () => activeKey === "custom" ? settings.custom : LISTS[activeKey].words;
+const wordList = () => activeWords().map(o => o.w);
+const sentenceOf = w => (activeWords().find(o => o.w === w) || {}).s || "";
+
+let pool = wordList();
+let currentWord = null, revealed = false, spinning = false, partyOn = false, partyOpenedAt = 0, closeTimer = null;
+
+// ---------- audio ----------
+let ac = null, master = null, noiseBuf = null;
+function audio(){
+  if (!ac){
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    ac = new AC();
+    master = ac.createGain(); master.connect(ac.destination);
+    noiseBuf = ac.createBuffer(1, ac.sampleRate, ac.sampleRate);
+    const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random()*2 - 1;
+  }
+  if (ac.state === "suspended") ac.resume();
+  master.gain.value = settings.sound ? 0.9 : 0;
+  return ac;
+}
+function tone({f=440, type="sine", dur=.2, vol=.2, when=0, slide=0}){
+  const a = audio(); if (!a) return;
+  const t = a.currentTime + when, o = a.createOscillator(), g = a.createGain();
+  o.type = type; o.frequency.setValueAtTime(f, t);
+  if (slide) o.frequency.exponentialRampToValueAtTime(slide, t + dur);
+  g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + .008); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+  o.connect(g).connect(master); o.start(t); o.stop(t + dur + .03);
+}
+function noise({dur=.05, vol=.2, when=0, freq=2000, q=1}){
+  const a = audio(); if (!a) return;
+  const t = a.currentTime + when, s = a.createBufferSource(), bp = a.createBiquadFilter(), g = a.createGain();
+  s.buffer = noiseBuf; bp.type = "bandpass"; bp.frequency.value = freq; bp.Q.value = q;
+  g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+  s.connect(bp).connect(g).connect(master); s.start(t, Math.random()*.5, dur + .02);
+}
+const sfx = {
+  tick(){ tone({f:2100, type:"square", dur:.025, vol:.05}); noise({dur:.02, vol:.12, freq:3500, q:4}); },
+  lever(){ for (let i = 0; i < 7; i++) noise({dur:.03, vol:.3, when:i*.035, freq:1800, q:3}); tone({f:320, type:"sawtooth", dur:.35, vol:.08, slide:110}); },
+  stop(big){ tone({f:big?120:170, dur:.18, vol:big?.45:.25, slide:60}); noise({dur:.06, vol:.25, freq:900, q:1}); },
+  ding(){ tone({f:1318.5, dur:.45, vol:.14}); tone({f:1975.5, dur:.35, vol:.07, when:.06}); },
+  key(){ tone({f:620 + Math.random()*140, type:"triangle", dur:.08, vol:.16}); },
+  del(){ tone({f:360, type:"triangle", dur:.1, vol:.13, slide:220}); },
+  full(){ tone({f:200, type:"square", dur:.08, vol:.05}); },
+  boop(){ tone({f:300, dur:.22, vol:.3, slide:190}); tone({f:220, dur:.3, vol:.25, when:.18, slide:140}); },
+  reveal(){ tone({f:400, type:"triangle", dur:.3, vol:.2, slide:1200}); tone({f:1568, dur:.5, vol:.08, when:.22}); },
+  fanfare(){
+    tone({f:95, dur:.6, vol:.5, slide:40});
+    [523.25, 659.25, 783.99, 1046.5].forEach((f,i) => tone({f, type:"triangle", dur:.28, vol:.28, when:.05 + i*.11}));
+    [523.25, 659.25, 783.99, 1046.5, 1318.5].forEach(f => tone({f, type:"triangle", dur:1.6, vol:.1, when:.5}));
+    [261.6, 392].forEach(f => tone({f, type:"square", dur:1.4, vol:.035, when:.5}));
+    for (let i = 0; i < 26; i++) tone({f:2400 + Math.random()*2200, dur:.09, vol:.05, when:.55 + i*.065});
+    for (let i = 0; i < 10; i++) noise({dur:.08, vol:.12, when:.6 + i*.12, freq:6000, q:2});
+  }
+};
+
+// ---------- speech ----------
+function englishVoices(){
+  if (!hasSpeech) return [];
+  return speechSynthesis.getVoices().filter(v => /^en/i.test(v.lang));
+}
+function chooseVoice(name){
+  const vs = englishVoices();
+  if (name){ const v = vs.find(v => v.name === name); if (v) return v; }
+  // Built-in (on-device) voices start talking right away; online voices add a delay.
+  const local = vs.filter(v => v.localService);
+  const prefs = [/Samantha/i, /Aria/i, /Jenny/i, /Zira/i, /Ava/i, /Allison/i, /David/i];
+  for (const group of [local.filter(v => /en[-_]US/i.test(v.lang)), local, vs]){
+    for (const p of prefs){ const v = group.find(v => p.test(v.name)); if (v) return v; }
+    if (group.length) return group[0];
+  }
+  return null;
+}
+let voice = null;
+if (hasSpeech){
+  voice = chooseVoice(settings.voice);
+  speechSynthesis.onvoiceschanged = () => { voice = chooseVoice(settings.voice); if ($("settings").open) fillVoices(); };
+}
+let speechToken = 0;
+function stopSpeech(){ speechToken++; if (hasSpeech) speechSynthesis.cancel(); }
+function speakSeq(parts, opts = {}){
+  if (!hasSpeech) return;
+  const token = ++speechToken;
+  const busy = speechSynthesis.speaking || speechSynthesis.pending;
+  speechSynthesis.cancel();
+  const v = opts.voice !== undefined ? opts.voice : voice;
+  const rate = opts.rate || settings.rate;
+  let i = 0;
+  const next = () => {
+    if (token !== speechToken || i >= parts.length) return;
+    const u = new SpeechSynthesisUtterance(parts[i++]);
+    u.lang = v ? v.lang : "en-US"; if (v) u.voice = v; u.rate = rate; u.pitch = 1;
+    u.onend = () => setTimeout(next, 450);
+    speechSynthesis.speak(u);
+  };
+  busy ? setTimeout(next, 40) : next();
+}
+function wordParts(w, withSpell){
+  const parts = [withSpell ? `Spell: ${w}.` : `${w}.`];
+  const s = sentenceOf(w);
+  if (settings.sentences && s) parts.push(s);
+  parts.push(`${w}.`);
+  return parts;
+}
+
+// ---------- reels ----------
+const MYSTERY = { mystery: true };
+const makeReel = (id, kind) => { const el = $(id); return { el, kind, strip: el.querySelector(".strip"), items: [] }; };
+const reels = { left: makeReel("reelL","sym"), right: makeReel("reelR","sym"), word: makeReel("reelW","word") };
+function render(reel, items){
+  reel.items = items;
+  reel.strip.replaceChildren(...items.map(it => {
+    const d = document.createElement("div"); d.className = "cell";
+    if (it === MYSTERY){ d.classList.add("mystery"); d.textContent = "?"; }
+    else if (reel.kind === "sym") d.innerHTML = it;
+    else d.textContent = it;
+    return d;
+  }));
+}
+function randFrom(arr, not){
+  if (arr.length < 2) return arr[0];
+  let x; do { x = arr[Math.floor(Math.random()*arr.length)]; } while (x === not);
+  return x;
+}
+function seedReels(){
+  const ws = wordList();
+  render(reels.word, [randFrom(ws), MYSTERY, randFrom(ws)]);
+  [reels.left, reels.right].forEach(r => render(r, [randFrom(SYMBOLS), randFrom(SYMBOLS), randFrom(SYMBOLS)]));
+  Object.values(reels).forEach(r => r.el.style.setProperty("--pos", 1));
+}
+let lastTick = 0;
+function runReel(reel, src, n, dur, final){
+  const list = [...reel.items];
+  let prev = list[list.length - 1];
+  for (let i = 0; i < n; i++){ prev = randFrom(src, prev); list.push(prev); }
+  list.push(final, randFrom(src, list[list.length - 1]));
+  const f = list.length - 2, dist = f - 1, over = .3, split = .86;
+  render(reel, list);
+  reel.el.style.setProperty("--pos", 1);
+  return new Promise(res => {
+    const start = performance.now(); let lastCell = 1;
+    function frame(now){
+      const t = Math.min(1, (now - start) / dur);
+      let pos;
+      if (t < split){ const k = t / split; pos = 1 + (dist + over) * (1 - Math.pow(1 - k, 3)); }
+      else { const k = (t - split) / (1 - split); pos = 1 + dist + over * Math.cos(k * Math.PI * 1.5) * (1 - k); }
+      reel.el.style.setProperty("--pos", pos);
+      reel.el.classList.toggle("fast", t < split * .55);
+      const c = Math.round(pos);
+      if (reel.kind === "word" && c !== lastCell){ lastCell = c; if (now - lastTick > 28){ sfx.tick(); lastTick = now; } }
+      if (t < 1) requestAnimationFrame(frame);
+      else {
+        reel.el.classList.remove("fast");
+        render(reel, [list[f-1], list[f], list[f+1]]);
+        reel.el.style.setProperty("--pos", 1);
+        sfx.stop(reel.kind === "word");
+        res();
+      }
+    }
+    requestAnimationFrame(frame);
+  });
+}
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+// ---------- game flow ----------
+function updateButtons(){
+  spinBtn.disabled = spinning; lever.disabled = spinning;
+  const noWord = !currentWord || spinning;
+  hearBtn.disabled = correctBtn.disabled = revealBtn.disabled = noWord;
+  $("kbSpin").disabled = spinning; $("kbHear").disabled = noWord;
+  $("kbDel").disabled = $("kbDone").disabled = !canType();
+  revealBtn.textContent = revealed ? "🙈 Hide" : "👀 Check";
+}
+function updateTally(){ $("tally").textContent = `${pool.length} ${pool.length === 1 ? "word" : "words"} to go`; }
+function setSign(state){
+  sign.className = "sign " + state;
+  sign.textContent = state === "idle" ? "Tap spin!" : state === "pop" ? "Spell!" : "";
+}
+function centerCell(){ return reels.word.strip.children[1]; }
+function showWord(w, animate){
+  const c = centerCell(); if (!c) return;
+  c.classList.remove("mystery", "shown"); c.textContent = w;
+  if (animate){ void c.offsetWidth; c.classList.add("shown"); }
+}
+function hideWord(){
+  const c = centerCell(); if (!c) return;
+  c.classList.remove("shown"); c.classList.add("mystery"); c.textContent = "?";
+}
+
+async function spin(){
+  if (spinning || partyOn || !activeWords().length) return;
+  if (!pool.length) { pool = wordList(); updateTally(); }
+  audio();
+  spinning = true; currentWord = null; revealed = false;
+  resetTyping(); renderBoxes(); setMsg("Spinning…"); updateButtons();
+  stopSpeech();
+  setSign("off"); win.classList.remove("win", "landed"); app.classList.remove("win");
+  lever.classList.remove("pull"); void lever.offsetWidth; lever.classList.add("pull");
+  sfx.lever();
+  await sleep(220);
+  const target = randFrom(pool, currentShownWord);
+  // Other words on the reel never include the hidden word, so it can't be spotted.
+  const others = wordList().filter(w => w !== target);
+  const fillers = others.length ? others : ["★"];
+  // Replace the old center cell so the reel starts from a normal state.
+  render(reels.word, reels.word.items.map(it => it === MYSTERY || it === target ? randFrom(fillers) : it));
+  const sym = randFrom(SYMBOLS);
+  const k = matchMedia("(prefers-reduced-motion: reduce)").matches ? .55 : 1;
+  await Promise.all([
+    runReel(reels.left, SYMBOLS, 14, 1500*k, sym),
+    runReel(reels.right, SYMBOLS, 19, 2150*k, sym),
+    runReel(reels.word, fillers, 26, 3000*k, MYSTERY)
+  ]);
+  land(target);
+}
+let currentShownWord = null;
+function land(word){
+  spinning = false; currentWord = word; currentShownWord = word; revealed = false;
+  setSign("pop");
+  win.classList.add("win", "landed"); app.classList.add("win");
+  setTimeout(() => app.classList.remove("win"), 2400);
+  sfx.ding();
+  speakSeq(wordParts(word, true));
+  resetTyping(); renderBoxes(); setMsg("Spell the word you hear.");
+  updateButtons();
+}
+function toggleReveal(){
+  if (!currentWord || spinning || partyOn) return;
+  revealed = !revealed;
+  if (revealed){ showWord(currentWord, true); sfx.reveal(); } else hideWord();
+  updateButtons();
+}
+function correct(){
+  if (!currentWord || spinning || partyOn) return;
+  const w = currentWord;
+  pool = pool.filter(x => x !== w);
+  currentWord = null; revealed = false; resetTyping(); renderBoxes(); updateButtons(); updateTally();
+  stopSpeech();
+  showWord(w, false);
+  win.classList.remove("win");
+  celebrate(w, pool.length === 0);
+}
+// Fonts carry extra space above or below the letters, so measure it and shift
+// the letters until they sit in the visual middle of each tile.
+let letterNudge = null;
+function measureNudge(){
+  try{
+    const c = document.createElement("canvas").getContext("2d");
+    c.font = '700 100px Andika, "Century Gothic", "Comic Sans MS", sans-serif';
+    const x = c.measureText("x"), d = c.measureText("d");
+    if (!x.fontBoundingBoxAscent) return 0;
+    const A = x.fontBoundingBoxAscent, D = x.fontBoundingBoxDescent;
+    const visualCenter = (x.actualBoundingBoxAscent + d.actualBoundingBoxAscent) / 4;
+    return +((visualCenter - (A - D) / 2) / 100).toFixed(3);
+  }catch(e){ return 0; }
+}
+function applyNudge(){ letterNudge = measureNudge(); document.documentElement.style.setProperty("--nudge", letterNudge + "em"); }
+applyNudge();
+if (document.fonts && document.fonts.load) document.fonts.load('700 100px Andika').then(applyNudge).catch(() => {});
+
+function celebrate(word, finale){
+  partyOn = true; partyOpenedAt = performance.now();
+  const big = $("big");
+  big.textContent = finale ? "All done!" : PRAISE_BIG[Math.floor(Math.random()*PRAISE_BIG.length)];
+  big.style.animation = "none"; void big.offsetWidth; big.style.animation = "";
+  $("letters").replaceChildren(...[...word].map((ch, i) => {
+    const s = document.createElement("span"), b = document.createElement("b");
+    b.textContent = ch; s.appendChild(b); s.style.animationDelay = (.35 + i*.12) + "s"; return s;
+  }));
+  if (letterNudge === null) letterNudge = measureNudge();
+  $("letters").style.setProperty("--nudge", letterNudge + "em");
+  party.classList.add("on"); app.classList.add("shake", "win");
+  audio(); sfx.fanfare();
+  burst(); setTimeout(burst, 900);
+  if (finale){ setTimeout(burst, 1800); setTimeout(burst, 2700); setTimeout(() => sfx.fanfare(), 1700); }
+  clearTimeout(closeTimer);
+  closeTimer = setTimeout(closeParty, finale ? 7500 : 5000);
+}
+function closeParty(){
+  if (!partyOn) return;
+  partyOn = false; clearTimeout(closeTimer);
+  party.classList.remove("on"); app.classList.remove("shake", "win");
+  if (!pool.length){ pool = wordList(); updateTally(); }
+  setSign("idle"); setMsg("Tap Spin to get a word!");
+}
+
+// ---------- typing mode ----------
+let typing = false, typed = [], attempts = 0, hintMask = [], typeLocked = false;
+const ROWS = ["abcdefg", "hijklmnop", "qrstuvwxyz"];
+const boxesEl = $("boxes");
+function setMsg(t){ $("answerMsg").textContent = t; }
+function resetTyping(){ typed = []; attempts = 0; hintMask = []; typeLocked = false; }
+function canType(){ return typing && !!currentWord && !spinning && !partyOn && !typeLocked; }
+function renderBoxes(state){
+  if (!currentWord){ boxesEl.replaceChildren(); return; }
+  const w = currentWord, lw = w.toLowerCase();
+  boxesEl.replaceChildren(...[...w].map((ch, i) => {
+    const d = document.createElement("div"), b = document.createElement("b");
+    d.className = "box";
+    if (state === "answer"){ d.classList.add("filled", "shown-answer"); b.textContent = ch; }
+    else if (typed[i]){
+      d.classList.add("filled"); b.textContent = typed[i];
+      if (state === "good" || (hintMask[i] && typed[i] === lw[i])) d.classList.add("good");
+    } else if (i === typed.length && !typeLocked) d.classList.add("next");
+    d.appendChild(b); return d;
+  }));
+}
+function wiggle(){ boxesEl.classList.remove("wiggle"); void boxesEl.offsetWidth; boxesEl.classList.add("wiggle"); }
+function typeLetter(ch){
+  if (!canType()) return;
+  if (typed.length >= currentWord.length){ sfx.full(); wiggle(); return; }
+  typed.push(ch); sfx.key(); renderBoxes();
+  const last = boxesEl.children[typed.length - 1]; if (last) last.classList.add("pop");
+  updateButtons();
+}
+function deleteLetter(){
+  if (!canType() || !typed.length) return;
+  typed.pop(); sfx.del(); renderBoxes(); updateButtons();
+}
+function submitTyped(){
+  if (!canType()) return;
+  const w = currentWord, lw = w.toLowerCase();
+  if (typed.length < w.length){ wiggle(); sfx.boop(); setMsg("Fill every box."); return; }
+  if (typed.join("") === lw){
+    typeLocked = true; renderBoxes("good"); setMsg("You got it!"); sfx.reveal(); updateButtons();
+    setTimeout(() => { typeLocked = false; if (currentWord === w) correct(); }, 750);
+    return;
+  }
+  attempts++;
+  if (attempts >= 3){
+    typeLocked = true; renderBoxes("answer"); showWord(w, true); revealed = true;
+    sfx.boop(); setMsg("Here is the word. Tap Spin for a new one!");
+    speakSeq([`${w}.`]); updateButtons();
+    return;
+  }
+  hintMask = attempts >= 2 ? [...lw].map((c, i) => typed[i] === c) : [];
+  wiggle(); sfx.boop(); renderBoxes();
+  setMsg(attempts === 2 ? "Green letters are right. Try again!" : "Not quite. Try again!");
+  speakSeq(["Try again.", `${w}.`]);
+}
+function setMode(on){
+  if (partyOn) return;
+  typing = on;
+  app.classList.toggle("typing", on);
+  $("modeBtn").querySelector(".lb-label").textContent = on ? "🗣️ Say it" : "✏️ Type it";
+  if (currentWord){ resetTyping(); if (revealed){ hideWord(); revealed = false; } }
+  renderBoxes();
+  setMsg(spinning ? "Spinning…" : currentWord ? "Spell the word you hear." : "Tap Spin to get a word!");
+  updateButtons();
+}
+$("kbRows").replaceChildren(...ROWS.map(row => {
+  const r = document.createElement("div"); r.className = "kb-row";
+  [...row].forEach(ch => {
+    const k = document.createElement("button"), b = document.createElement("b");
+    k.className = "key"; k.dataset.k = ch; k.setAttribute("aria-label", ch); b.textContent = ch; k.appendChild(b);
+    k.addEventListener("click", () => typeLetter(ch));
+    r.appendChild(k);
+  });
+  return r;
+}));
+function flashKey(ch){
+  const k = $("kbRows").querySelector(`[data-k="${ch}"]`); if (!k) return;
+  k.classList.add("pressed"); setTimeout(() => k.classList.remove("pressed"), 120);
+}
+$("kbSpin").addEventListener("click", spin);
+$("kbHear").addEventListener("click", () => { if (currentWord) speakSeq(wordParts(currentWord, false)); });
+$("kbDel").addEventListener("click", deleteLetter);
+$("kbDone").addEventListener("click", submitTyped);
+$("modeBtn").addEventListener("click", () => setMode(!typing));
+
+// ---------- confetti ----------
+const cv = $("confetti"), ctx = cv.getContext("2d");
+let parts = [], raf = null;
+const COLORS = ["#f5b81c","#ff4fb8","#22c870","#52aaff","#ff5a3c","#ffffff","#b56cff"];
+const rnd = (a, b) => a + Math.random()*(b - a);
+function burst(){
+  const dpr = Math.min(2, window.devicePixelRatio || 1), W = innerWidth, H = innerHeight;
+  cv.width = W*dpr; cv.height = H*dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const scale = Math.max(1, H / 700);
+  for (let i = 0; i < 90; i++){
+    [0, 1].forEach(side => parts.push({ kind:"paper", x: side ? W : 0, y: H*.95, vx: (side ? -1 : 1) * rnd(5, 17) * scale, vy: rnd(-26, -12) * scale,
+      w: rnd(8, 14)*scale, h: rnd(12, 22)*scale, r: rnd(0, 6), vr: rnd(-.3, .3), c: COLORS[i % COLORS.length], flip: rnd(0, 6) }));
+  }
+  for (let i = 0; i < 45; i++){
+    parts.push({ kind:"coin", x: rnd(0, W), y: rnd(-H*.8, -20), vx: rnd(-1.5, 1.5), vy: rnd(3, 8)*scale, rad: rnd(14, 26)*scale, flip: rnd(0, 6), vf: rnd(.08, .2) });
+  }
+  if (!raf) raf = requestAnimationFrame(loop);
+}
+function loop(){
+  const W = innerWidth, H = innerHeight;
+  ctx.clearRect(0, 0, W, H);
+  for (const p of parts){
+    if (p.kind === "paper"){
+      p.vx *= .985; p.vy = Math.min(p.vy + .45, 5); p.x += p.vx; p.y += p.vy; p.r += p.vr; p.flip += .15;
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r); ctx.scale(1, Math.cos(p.flip));
+      ctx.fillStyle = p.c; ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h); ctx.restore();
+    } else {
+      p.vy += .25; p.x += p.vx; p.y += p.vy; p.flip += p.vf;
+      const sx = Math.abs(Math.cos(p.flip)) + .08;
+      ctx.save(); ctx.translate(p.x, p.y); ctx.scale(sx, 1);
+      ctx.beginPath(); ctx.arc(0, 0, p.rad, 0, Math.PI*2); ctx.fillStyle = "#f5b81c"; ctx.fill();
+      ctx.lineWidth = 3; ctx.strokeStyle = "#a86b00"; ctx.stroke();
+      ctx.beginPath(); ctx.arc(0, 0, p.rad*.62, 0, Math.PI*2); ctx.strokeStyle = "#ffe28a"; ctx.stroke();
+      ctx.restore();
+    }
+  }
+  parts = parts.filter(p => p.y < H + 80 && p.x > -120 && p.x < W + 120);
+  raf = parts.length ? requestAnimationFrame(loop) : (ctx.clearRect(0, 0, W, H), null);
+}
+
+// ---------- settings dialog ----------
+const dlg = $("settings");
+const toText = words => words.map(o => o.s ? `${o.w}: ${o.s}` : o.w).join("\n");
+function parseWords(text){
+  const out = [];
+  text.split(/\n+/).forEach(line => {
+    const t = line.trim(); if (!t) return;
+    const i = t.indexOf(":");
+    if (i > 0) out.push({ w: t.slice(0, i).trim(), s: t.slice(i + 1).trim() });
+    else t.split(",").map(x => x.trim()).filter(Boolean).forEach(w => out.push({ w, s: "" }));
+  });
+  return dedupe(out);
+}
+function fillVoices(){
+  const sel = $("voiceInput"), keep = sel.value || (voice && voice.name) || "";
+  const vs = englishVoices();
+  sel.replaceChildren(...vs.map(v => {
+    const o = document.createElement("option"); o.value = v.name;
+    o.textContent = `${v.name} (${v.lang})${v.localService ? "" : " — online, slower to start"}`;
+    return o;
+  }));
+  if (!vs.length){ const o = document.createElement("option"); o.textContent = "No English voices found"; o.value = ""; sel.appendChild(o); }
+  if (keep && vs.some(v => v.name === keep)) sel.value = keep;
+}
+function openSettings(){
+  if (spinning || partyOn) return;
+  $("wordsInput").value = toText(settings.custom);
+  $("sentenceInput").checked = settings.sentences; $("soundInput").checked = settings.sound; $("err").textContent = "";
+  $("typingInput").checked = settings.startTyping ?? (START_MODE === "type");
+  $("rateInput").value = RATES.includes(String(settings.rate)) ? String(settings.rate) : "0.9";
+  $("voiceInput").value = "";
+  fillVoices();
+  if (voice) $("voiceInput").value = voice.name;
+  if (dlg.showModal) dlg.showModal();
+}
+$("editBtn").addEventListener("click", openSettings);
+$("cancelSettings").addEventListener("click", () => { stopSpeech(); dlg.close(); });
+$("resetWords").addEventListener("click", () => { $("wordsInput").value = ""; });
+$("testVoice").addEventListener("click", () => {
+  const v = englishVoices().find(v => v.name === $("voiceInput").value) || voice;
+  speakSeq(["Spell: sandwich.", "I ate a sandwich for lunch.", "sandwich."], { voice: v, rate: parseFloat($("rateInput").value) });
+});
+$("saveSettings").addEventListener("click", () => {
+  const custom = parseWords($("wordsInput").value);
+  const changed = custom.map(o => o.w).join("|") !== settings.custom.map(o => o.w).join("|");
+  settings = { custom, sentences: $("sentenceInput").checked, sound: $("soundInput").checked,
+    voice: $("voiceInput").value || "", rate: parseFloat($("rateInput").value) || 0.9,
+    startTyping: $("typingInput").checked === (START_MODE === "type") ? null : $("typingInput").checked };
+  save();
+  setMode($("typingInput").checked);
+  voice = chooseVoice(settings.voice);
+  if (ac) master.gain.value = settings.sound ? .9 : 0;
+  stopSpeech(); dlg.close();
+  if (activeKey === "custom" && !custom.length) selectList(scheduledIndex());
+  else if (activeKey === "custom" && changed) selectList("custom");
+});
+
+// ---------- list picker ----------
+const picker = $("picker"), listBtn = $("listBtn");
+function fmtDate(iso){ const [y, m, d] = iso.split("-").map(Number); return new Date(y, m - 1, d).toLocaleDateString("en-US", { month:"short", day:"numeric" }); }
+function updateListBtn(){
+  const custom = activeKey === "custom";
+  listBtn.querySelector(".lb-label").textContent = custom ? "My list" : LISTS[activeKey].name;
+  listBtn.querySelector(".lb-focus").textContent = custom ? `${settings.custom.length} words` : LISTS[activeKey].focus;
+}
+function makeCard(key, title, focus, dates, words, isNow){
+  const c = document.createElement("button");
+  c.className = "card" + (key === "custom" ? " custom" : "") + (key === activeKey ? " active" : "");
+  const add = (cls, text) => { const e = document.createElement("span"); e.className = cls; e.textContent = text; c.appendChild(e); };
+  add("c-num", title); add("c-focus", focus);
+  if (dates) add("c-dates", dates);
+  add("c-words", words.slice(0, 5).map(o => o.w).join(", ") + (words.length > 5 ? " …" : ""));
+  if (isNow) add("badge", "Studying now");
+  c.addEventListener("click", () => selectList(key));
+  return c;
+}
+function openPicker(){
+  if (spinning || partyOn) return;
+  const now = scheduledIndex();
+  const cards = LISTS.map((l, i) => makeCard(i, l.name, l.focus, l.start && l.end ? `${fmtDate(l.start)} – ${fmtDate(l.end)}` : "", l.words, i === now));
+  if (settings.custom.length) cards.push(makeCard("custom", "My list", "Words added in Settings", "", settings.custom, false));
+  $("cards").replaceChildren(...cards);
+  picker.hidden = false;
+  const act = $("cards").querySelector(".active"); if (act) act.focus();
+}
+function closePicker(){ picker.hidden = true; }
+function selectList(key){
+  closePicker();
+  activeKey = key;
+  pool = wordList(); currentWord = null; currentShownWord = null; revealed = false;
+  stopSpeech(); win.classList.remove("win", "landed");
+  resetTyping(); renderBoxes(); setMsg("Tap Spin to get a word!");
+  seedReels(); setSign("idle"); updateButtons(); updateTally(); updateListBtn();
+}
+listBtn.addEventListener("click", openPicker);
+$("pickerClose").addEventListener("click", closePicker);
+picker.addEventListener("click", e => { if (e.target === picker) closePicker(); });
+
+// ---------- events ----------
+spinBtn.addEventListener("click", spin);
+lever.addEventListener("click", spin);
+hearBtn.addEventListener("click", () => { if (currentWord) speakSeq(wordParts(currentWord, false)); });
+revealBtn.addEventListener("click", toggleReveal);
+correctBtn.addEventListener("click", correct);
+party.addEventListener("click", () => { if (performance.now() - partyOpenedAt > 700) closeParty(); });
+document.addEventListener("keydown", e => {
+  if (dlg.open) return;
+  if (!picker.hidden){ if (e.key === "Escape") closePicker(); return; }
+  if (partyOn && (e.key === " " || e.key === "Enter" || e.key === "Escape")){ e.preventDefault(); if (performance.now() - partyOpenedAt > 700) closeParty(); return; }
+  const k = e.key.toLowerCase();
+  if (typing && !e.ctrlKey && !e.metaKey && !e.altKey){
+    if (/^[a-z]$/.test(k)){ e.preventDefault(); typeLetter(k); flashKey(k); return; }
+    if (e.key === "Backspace"){ e.preventDefault(); deleteLetter(); return; }
+    if (e.key === "Enter"){ e.preventDefault(); submitTyped(); return; }
+  }
+  if (e.key === " "){ e.preventDefault(); spin(); }
+  else if (typing) return;
+  else if (k === "c") correct();
+  else if (k === "k") toggleReveal();
+  else if (k === "h" && currentWord) speakSeq(wordParts(currentWord, false));
+});
+
+seedReels(); updateTally(); updateButtons(); updateListBtn();
+setMode(settings.startTyping ?? (START_MODE === "type"));
+})();
+</script>
+<script>
+// Lets the app install on the smartboard and keep working when the internet drops.
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+}
+</script>
+</body>
+</html>
