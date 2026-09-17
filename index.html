@@ -22,15 +22,95 @@
   --display:'Bungee', Impact, 'Arial Black', sans-serif;
   --shade:'Bungee Shade', 'Bungee', Impact, 'Arial Black', sans-serif;
   --reader:'Andika', 'Century Gothic', 'Comic Sans MS', system-ui, sans-serif;
+
+  /* ----- Visual-theme tokens (marquee/cabinet/reel/lever/spin/tally/celebration) -----
+     Defaults below reproduce today's Classic look exactly. Other themes override
+     these same tokens in the body[data-theme="…"] blocks further down; nothing
+     outside this token set changes between themes. */
+  --th-bg1:#5a1a78; --th-bg3:#12051a;
+  --th-marquee1:#b3122f; --th-marquee2:var(--velvet-dark);
+  --th-trim:var(--gold); --th-trim-dark:var(--gold-dark); --th-trim-light:var(--gold-light);
+  --th-title-glow:rgba(255,200,60,.65);
+  --th-bulb:var(--bulb); --th-bulb-glow:rgba(255,220,120,.9);
+  --th-cab1:#c81c3e; --th-cab2:var(--velvet); --th-cab3:var(--velvet-dark);
+  --th-sign-color:#ffe0f3; --th-neon:var(--neon);
+  --th-mystery2:#a8142f;
+  --th-lev-mount1:#6d6d6d; --th-lev-mount2:#f0f0f0; --th-lev-mount3:#8a8a8a;
+  --th-lev-arm1:#7a7a7a; --th-lev-arm2:#fafafa; --th-lev-arm3:#7a7a7a;
+  --th-lev-knob1:#ff8a8a; --th-lev-knob2:#e0112f; --th-lev-knob3:#7a0515;
+  --th-lev-ring-w:0px; --th-lev-ring-c:transparent;
+  --th-spin1:#ff7070; --th-spin2:#d4102b; --th-spin3:#8e0619; --th-spin-shadow:#5c0410;
+  --th-kb1:#5e1433; --th-kb2:#2d0718;
+  --th-party1:rgba(92,24,122,.9); --th-party2:rgba(15,3,25,.97); --th-rays:rgba(255,210,80,.2);
+  --th-glow:rgba(255,190,40,.95);
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --plum:#240a33; --reel:#fffdf6; } }
 :root[data-theme="dark"]{ --plum:#240a33; --reel:#fffdf6; }
+
+/* ----- Themes (Space Explorer / Under the Sea / Circus Carnival) ----- */
+body[data-theme="space"]{
+  --th-bg1:#1a1a40; --plum:#0f1230; --th-bg3:#050814;
+  --th-marquee1:#22305c; --th-marquee2:#0b132b;
+  --th-trim:#4fd1ff; --th-trim-dark:#1c8fb8; --th-trim-light:#b6f0ff;
+  --th-title-glow:rgba(79,209,255,.55);
+  --th-bulb:#bdf3ff; --th-bulb-glow:rgba(120,220,255,.9);
+  --th-cab1:#1c2541; --th-cab2:#142038; --th-cab3:#0b132b;
+  --th-sign-color:#eafcff; --th-neon:#4fd1ff;
+  --th-mystery2:#0f3d57;
+  --th-lev-mount1:#3a4358; --th-lev-mount2:#dfe8f2; --th-lev-mount3:#57657d;
+  --th-lev-arm1:#57657d; --th-lev-arm2:#eef3f8; --th-lev-arm3:#57657d;
+  --th-lev-knob1:#ffb08a; --th-lev-knob2:#ff7847; --th-lev-knob3:#a83a12;
+  --th-spin1:#ffb08a; --th-spin2:#ff7847; --th-spin3:#a83a12; --th-spin-shadow:#5c2308;
+  --th-kb1:#1c2541; --th-kb2:#0b132b;
+  --th-party1:rgba(26,26,64,.92); --th-party2:rgba(5,8,20,.97); --th-rays:rgba(79,209,255,.16);
+  --th-glow:rgba(79,209,255,.85);
+}
+body[data-theme="sea"]{
+  --th-bg1:#0a4a63; --plum:#04324a; --th-bg3:#001220;
+  --th-marquee1:#0f6e73; --th-marquee2:#073b3f;
+  --th-trim:#7ce7e1; --th-trim-dark:#3a8f86; --th-trim-light:#ffe9a8;
+  --th-title-glow:rgba(124,231,225,.5);
+  --th-bulb:#d9fff8; --th-bulb-glow:rgba(124,231,225,.9);
+  --th-cab1:#158089; --th-cab2:#0f6e73; --th-cab3:#073b3f;
+  --th-sign-color:#eafffb; --th-neon:#7ce7e1;
+  --th-mystery2:#052b30;
+  --th-lev-mount1:#7a5a2a; --th-lev-mount2:#e8c46a; --th-lev-mount3:#5a3f18;
+  --th-lev-arm1:#3a8f86; --th-lev-arm2:#bdf5ee; --th-lev-arm3:#3a8f86;
+  --th-lev-knob1:#3a4a4a; --th-lev-knob2:#1c2626; --th-lev-knob3:#0a0f0f;
+  --th-lev-ring-w:4px; --th-lev-ring-c:#7ce7e1;
+  --th-spin1:#fff3c9; --th-spin2:#e8c46a; --th-spin3:#8a6a1a; --th-spin-shadow:#4a3a10;
+  --th-kb1:#0f6e73; --th-kb2:#073b3f;
+  --th-party1:rgba(4,74,99,.92); --th-party2:rgba(0,18,32,.97); --th-rays:rgba(124,231,225,.16);
+  --th-glow:rgba(124,231,225,.85);
+}
+body[data-theme="circus"]{
+  --th-bg1:#3a1420; --plum:#1c0b12; --th-bg3:#0a0308;
+  --th-marquee1:#d4142f; --th-marquee2:#7a0d1f;
+  --th-trim:#ffd400; --th-trim-dark:#b38f00; --th-trim-light:#fff3b0;
+  --th-title-glow:rgba(255,212,0,.5);
+  --th-bulb:#fff3b0; --th-bulb-glow:rgba(255,212,0,.9);
+  --th-cab1:#ff4d6d; --th-cab2:#1c3fd6; --th-cab3:#7a0d1f;
+  --th-sign-color:#fff6d8; --th-neon:#ffd400;
+  --th-mystery2:#d4142f;
+  --th-lev-mount1:#7a5a2a; --th-lev-mount2:#e8c46a; --th-lev-mount3:#5a3f18;
+  --th-lev-arm1:#8a0f24; --th-lev-arm2:#d4142f; --th-lev-arm3:#5a0a18;
+  --th-lev-knob1:#fff3b0; --th-lev-knob2:#ffd400; --th-lev-knob3:#b38f00;
+  --th-spin1:#6f8dff; --th-spin2:#1c3fd6; --th-spin3:#0d1f7a; --th-spin-shadow:#050d3d;
+  --th-kb1:#b3122f; --th-kb2:#6a0a18;
+  --th-party1:rgba(150,16,40,.92); --th-party2:rgba(20,4,10,.97); --th-rays:rgba(255,212,0,.18);
+  --th-glow:rgba(255,212,0,.85);
+}
+/* Big-top canvas: the cabinet is striped, so its sign needs its own contrast. */
+body[data-theme="circus"] .cabinet{ background:repeating-linear-gradient(90deg, #d4142f 0 38px, #fff6ec 38px 76px); }
+body[data-theme="circus"] .sign{ color:#0d1f7a; text-shadow:0 0 8px #ffd400, 0 0 18px #ffd400, 0 2px 0 rgba(255,212,0,.9) }
+/* Themed labels are longer than "Spin!", so they get a smaller type size. */
+body:not([data-theme="classic"]) .spin{ font-size:clamp(17px, 3.1vh, 34px); line-height:1.15; padding:0 .4em }
 
 *{box-sizing:border-box}
 html,body{margin:0;height:100%}
 body{
   height:100dvh; overflow:hidden; color:#fff; font-family:var(--reader);
-  background:radial-gradient(ellipse at 50% 38%, #5a1a78 0%, var(--plum) 58%, #12051a 100%);
+  background:radial-gradient(ellipse at 50% 38%, var(--th-bg1) 0%, var(--plum) 58%, var(--th-bg3) 100%);
   touch-action:manipulation; user-select:none; -webkit-user-select:none; -webkit-tap-highlight-color:transparent;
 }
 body::before{
@@ -52,20 +132,20 @@ button{font:inherit}
 /* ---------- Marquee ---------- */
 .marquee{
   justify-self:center; position:relative; padding:1.1vh 4.5vw;
-  border-radius:999px; background:linear-gradient(#b3122f, var(--velvet-dark));
-  border:5px solid var(--gold);
-  box-shadow:0 0 0 4px var(--gold-dark), 0 1vh 3vh rgba(0,0,0,.5), inset 0 0 22px rgba(0,0,0,.55);
+  border-radius:999px; background:linear-gradient(var(--th-marquee1), var(--th-marquee2));
+  border:5px solid var(--th-trim);
+  box-shadow:0 0 0 4px var(--th-trim-dark), 0 1vh 3vh rgba(0,0,0,.5), inset 0 0 22px rgba(0,0,0,.55);
 }
 .marquee h1{
   margin:0; font-family:var(--shade); font-weight:400; white-space:nowrap;
-  font-size:clamp(26px, 6.6vh, 84px); line-height:1.1; color:var(--gold-light);
-  text-shadow:0 0 18px rgba(255,200,60,.65);
+  font-size:clamp(26px, 6.6vh, 84px); line-height:1.1; color:var(--th-trim-light);
+  text-shadow:0 0 18px var(--th-title-glow);
 }
 .bulbs{position:absolute; left:7%; right:7%; display:flex; justify-content:space-between; pointer-events:none}
 .bulbs.top{top:-10px} .bulbs.bottom{bottom:-10px}
 .bulbs i{
-  width:14px; height:14px; border-radius:50%; background:var(--bulb);
-  box-shadow:0 0 8px 3px rgba(255,220,120,.9); animation:chase 1s steps(1) infinite;
+  width:14px; height:14px; border-radius:50%; background:var(--th-bulb);
+  box-shadow:0 0 8px 3px var(--th-bulb-glow); animation:chase 1s steps(1) infinite;
 }
 .bulbs i:nth-child(even){animation-delay:.5s}
 .app.win .bulbs i{animation-duration:.22s}
@@ -148,7 +228,7 @@ button{font:inherit}
   --k:min(6.2vw, 10vh); --g:1vh;
   justify-self:center; align-self:end; grid-template-columns:auto auto auto; gap:1.2vw;
   padding:1.5vh 1.5vw 2vh; border-radius:26px 26px 0 0;
-  background:linear-gradient(#5e1433, #2d0718); border:5px solid var(--gold); border-bottom:0;
+  background:linear-gradient(var(--th-kb1), var(--th-kb2)); border:5px solid var(--th-trim); border-bottom:0;
   box-shadow:0 -1vh 3vh rgba(0,0,0,.45);
 }
 .kb-rows{display:flex; flex-direction:column; gap:var(--g); align-items:center}
@@ -170,7 +250,7 @@ button{font:inherit}
 .kb-btn:active:not(:disabled){transform:translateY(.6vh); box-shadow:0 .1vh 0 var(--shadow)}
 .kb-btn:disabled{filter:grayscale(.85) brightness(.6); cursor:default}
 .kb-hear{background:linear-gradient(#52aaff,#1c6fd6); --shadow:#0d3f82}
-.kb-spin{background:radial-gradient(circle at 35% 30%, #ff7070, #d4102b 60%, #8e0619); --shadow:#5c0410; border:4px solid var(--gold)}
+.kb-spin{background:radial-gradient(circle at 35% 30%, var(--th-spin1), var(--th-spin2) 60%, var(--th-spin3)); --shadow:var(--th-spin-shadow); border:4px solid var(--th-trim)}
 .kb-del{background:linear-gradient(#9a9ab0,#5e5e74); --shadow:#2f2f3d}
 .kb-done{background:linear-gradient(#45e892,#15a458); --shadow:#0a5e31}
 
@@ -180,16 +260,16 @@ button{font:inherit}
   position:relative; display:flex; flex-direction:column; align-items:center;
   padding:.6vh calc(var(--cell)*.28) calc(var(--cell)*.3);
   border-radius:40px 40px 28px 28px;
-  background:linear-gradient(160deg, #c81c3e, var(--velvet) 42%, var(--velvet-dark));
-  border:6px solid var(--gold);
-  box-shadow:0 0 0 5px var(--gold-dark), 0 3vh 6vh rgba(0,0,0,.6), inset 0 3px 0 rgba(255,255,255,.3);
+  background:linear-gradient(160deg, var(--th-cab1), var(--th-cab2) 42%, var(--th-cab3));
+  border:6px solid var(--th-trim);
+  box-shadow:0 0 0 5px var(--th-trim-dark), 0 3vh 6vh rgba(0,0,0,.6), inset 0 3px 0 rgba(255,255,255,.3);
 }
 .sign{
   font-family:var(--display); height:calc(var(--cell)*.8); line-height:calc(var(--cell)*.8);
-  font-size:calc(var(--cell)*.56); color:#ffe0f3; white-space:nowrap;
-  text-shadow:0 0 6px var(--neon), 0 0 18px var(--neon), 0 0 40px var(--neon);
+  font-size:calc(var(--cell)*.56); color:var(--th-sign-color); white-space:nowrap;
+  text-shadow:0 0 6px var(--th-neon), 0 0 18px var(--th-neon), 0 0 40px var(--th-neon);
 }
-.sign.idle{font-size:calc(var(--cell)*.32); opacity:.6; text-shadow:0 0 6px var(--neon), 0 0 14px var(--neon)}
+.sign.idle{font-size:calc(var(--cell)*.32); opacity:.6; text-shadow:0 0 6px var(--th-neon), 0 0 14px var(--th-neon)}
 .sign.off{opacity:0}
 .sign.pop{animation:pop .6s cubic-bezier(.2,1.7,.4,1) both, flicker 1.6s .8s infinite}
 @keyframes pop{0%{transform:scale(0) rotate(-14deg)}100%{transform:scale(1) rotate(0)}}
@@ -221,15 +301,15 @@ button{font:inherit}
   content:""; position:absolute; top:-18px; border-top:18px solid transparent; border-bottom:18px solid transparent;
   filter:drop-shadow(0 2px 2px rgba(0,0,0,.6));
 }
-.payline::before{left:-14px; border-left:26px solid var(--gold)}
-.payline::after{right:-14px; border-right:26px solid var(--gold)}
+.payline::before{left:-14px; border-left:26px solid var(--th-trim)}
+.payline::after{right:-14px; border-right:26px solid var(--th-trim)}
 .window.win .reel.word{animation:glow .45s ease-in-out 6 alternate}
-@keyframes glow{from{box-shadow:inset 0 0 0 0 var(--gold)}to{box-shadow:inset 0 0 0 6px var(--gold), 0 0 34px 6px var(--gold)}}
+@keyframes glow{from{box-shadow:inset 0 0 0 0 var(--th-trim)}to{box-shadow:inset 0 0 0 6px var(--th-trim), 0 0 34px 6px var(--th-trim)}}
 
 .word .cell.mystery{
-  font-family:var(--display); font-weight:400; color:var(--gold-light); font-size:calc(var(--cell)*.62);
-  background:repeating-linear-gradient(45deg, var(--velvet) 0 18px, #a8142f 18px 36px);
-  text-shadow:0 4px 0 var(--velvet-dark);
+  font-family:var(--display); font-weight:400; color:var(--th-trim-light); font-size:calc(var(--cell)*.62);
+  background:repeating-linear-gradient(45deg, var(--th-cab2) 0 18px, var(--th-mystery2) 18px 36px);
+  text-shadow:0 4px 0 var(--th-cab3);
 }
 .word .cell.shown{animation:flipIn .5s cubic-bezier(.2,1.5,.4,1)}
 @keyframes flipIn{0%{transform:rotateX(90deg)}100%{transform:rotateX(0)}}
@@ -241,18 +321,20 @@ button{font:inherit}
 .lever:disabled{cursor:default}
 .lever .mount{
   position:absolute; left:0; bottom:calc(var(--cell)*.35); width:calc(var(--cell)*.6); height:calc(var(--cell)*.8);
-  background:linear-gradient(90deg,#6d6d6d,#f0f0f0 45%,#8a8a8a); border-radius:0 18px 18px 0;
+  background:linear-gradient(90deg,var(--th-lev-mount1),var(--th-lev-mount2) 45%,var(--th-lev-mount3)); border-radius:0 18px 18px 0;
   box-shadow:0 6px 14px rgba(0,0,0,.5);
 }
 .lever .arm{
   position:absolute; left:calc(var(--cell)*.3 - 8px); bottom:calc(var(--cell)*.75); width:16px; height:calc(var(--cell)*2.3);
-  background:linear-gradient(90deg,#7a7a7a,#fafafa 50%,#7a7a7a); border-radius:8px; transform-origin:50% 100%;
+  background:linear-gradient(90deg,var(--th-lev-arm1),var(--th-lev-arm2) 50%,var(--th-lev-arm3)); border-radius:8px; transform-origin:50% 100%;
 }
 .lever .knob{
   position:absolute; left:calc(var(--cell)*.3 - var(--cell)*.38); bottom:calc(var(--cell)*2.8); width:calc(var(--cell)*.76); height:calc(var(--cell)*.76);
-  border-radius:50%; background:radial-gradient(circle at 35% 30%, #ff8a8a, #e0112f 55%, #7a0515);
+  border-radius:50%; background:radial-gradient(circle at 35% 30%, var(--th-lev-knob1), var(--th-lev-knob2) 55%, var(--th-lev-knob3));
   box-shadow:0 6px 12px rgba(0,0,0,.55);
 }
+/* Themes that cap the lever with a ringed knob (the sea periscope eyepiece) set the ring width. */
+.lever .knob::after{content:""; position:absolute; inset:22%; border-radius:50%; border:var(--th-lev-ring-w) solid var(--th-lev-ring-c)}
 .lever.pull .arm{animation:armPull .6s ease-in-out}
 .lever.pull .knob{animation:knobPull .6s ease-in-out}
 @keyframes armPull{0%,100%{transform:scaleY(1)}40%,55%{transform:scaleY(.1)}}
@@ -272,8 +354,8 @@ button{font:inherit}
 .btn:focus-visible{outline:4px solid var(--gold-light); outline-offset:5px}
 .spin{
   width:clamp(104px, 17vh, 210px); height:clamp(104px, 17vh, 210px); padding:0; border-radius:50%;
-  font-size:clamp(26px, 5.2vh, 60px); border:6px solid var(--gold); --shadow:#5c0410;
-  background:radial-gradient(circle at 35% 30%, #ff7070, #d4102b 58%, #8e0619);
+  font-size:clamp(26px, 5.2vh, 60px); border:6px solid var(--th-trim); --shadow:var(--th-spin-shadow);
+  background:radial-gradient(circle at 35% 30%, var(--th-spin1), var(--th-spin2) 58%, var(--th-spin3));
 }
 .spin:not(:disabled){animation:breathe 1.8s ease-in-out infinite}
 @keyframes breathe{0%,100%{scale:1}50%{scale:1.06}}
@@ -282,28 +364,29 @@ button{font:inherit}
 .reveal{background:linear-gradient(#ffb84a,#ee7a00); --shadow:#8a4200}
 .tally{justify-self:start; display:flex; align-items:center; gap:.5em; font-family:var(--display); color:var(--gold-light); font-size:clamp(14px, 2.5vh, 28px)}
 .coin{width:1.3em; height:1.3em; border-radius:50%; background:radial-gradient(circle at 35% 35%, #fff3b0, var(--gold) 55%, var(--gold-dark)); border:2px solid var(--gold-dark); box-shadow:0 3px 0 var(--gold-dark)}
+.tally-emoji{width:1.3em; height:1.3em; display:flex; align-items:center; justify-content:center; font-size:1.05em; line-height:1}
 .edit{justify-self:end; background:rgba(255,255,255,.1); color:#fff; border:2px solid rgba(255,226,138,.5); border-radius:999px; min-height:52px; padding:0 1.2em; font-family:var(--reader); font-weight:700; font-size:clamp(14px, 2.2vh, 22px); cursor:pointer}
 .edit:focus-visible{outline:4px solid var(--gold-light); outline-offset:3px}
 
 /* ---------- Celebration ---------- */
 .party{position:fixed; inset:0; z-index:50; display:none; place-items:center; overflow:hidden; cursor:pointer;
-  background:radial-gradient(circle, rgba(92,24,122,.9), rgba(15,3,25,.97))}
+  background:radial-gradient(circle, var(--th-party1), var(--th-party2))}
 .party.on{display:grid; animation:fadein .2s}
 @keyframes fadein{from{opacity:0}}
 .rays{position:absolute; left:50%; top:50%; width:260vmax; height:260vmax; margin:-130vmax 0 0 -130vmax;
-  background:repeating-conic-gradient(rgba(255,210,80,.2) 0deg 9deg, transparent 9deg 18deg); animation:rays 14s linear infinite}
+  background:repeating-conic-gradient(var(--th-rays) 0deg 9deg, transparent 9deg 18deg); animation:rays 14s linear infinite}
 @keyframes rays{to{transform:rotate(360deg)}}
 .party canvas{position:absolute; inset:0; width:100%; height:100%; z-index:3; pointer-events:none}
 .party-text{position:relative; z-index:2; text-align:center; padding:2vh 3vw}
-.big{font-family:var(--shade); font-size:min(24vh, 12vw); line-height:1; color:var(--gold-light);
-  text-shadow:0 0 34px rgba(255,190,40,.95), 0 10px 0 var(--velvet); animation:slam .75s cubic-bezier(.2,1.8,.4,1) both}
+.big{font-family:var(--shade); font-size:min(24vh, 12vw); line-height:1; color:var(--th-trim-light);
+  text-shadow:0 0 34px var(--th-glow), 0 10px 0 var(--th-cab2); animation:slam .75s cubic-bezier(.2,1.8,.4,1) both}
 @keyframes slam{0%{transform:scale(4) rotate(8deg); opacity:0}100%{transform:scale(1); opacity:1}}
 .letters{display:flex; justify-content:center; flex-wrap:wrap; gap:1.4vh; margin-top:4vh}
 .letters span b{position:relative; top:var(--nudge, 0em); font-weight:inherit}
 .letters span{
   font-family:var(--reader); font-weight:700; font-size:min(13vh, 9vw); width:1.05em; height:1.3em;
   display:block; text-align:center; line-height:calc(1.3em - 10px); border-radius:.2em; background:var(--reel); color:var(--ink);
-  border:5px solid var(--gold); box-shadow:0 9px 0 var(--gold-dark); animation:drop .55s cubic-bezier(.2,1.7,.4,1) both;
+  border:5px solid var(--th-trim); box-shadow:0 9px 0 var(--th-trim-dark); animation:drop .55s cubic-bezier(.2,1.7,.4,1) both;
 }
 @keyframes drop{0%{transform:translateY(-60vh) rotate(-30deg); opacity:0}100%{transform:none; opacity:1}}
 .tap{margin-top:5vh; font-family:var(--display); opacity:.75; font-size:clamp(14px, 2.6vh, 28px)}
@@ -323,6 +406,9 @@ dialog textarea{width:100%; min-height:150px; font:700 20px/1.45 var(--reader); 
 dialog select{min-height:52px; font:700 18px var(--reader); border-radius:10px; padding:0 10px; max-width:100%; flex:1; background:var(--reel); color:var(--ink)}
 dialog .test{min-height:52px; padding:0 1em; border-radius:999px; border:2px solid var(--gold); background:transparent; color:#fff; font:700 19px var(--reader); cursor:pointer}
 .err{color:#ffb3c7; min-height:1.3em; font-size:18px}
+.theme-cards{grid-template-columns:repeat(auto-fill, minmax(132px, 1fr)); gap:18px 12px; margin:0 0 22px}
+.theme-cards .card{min-height:112px; padding:14px 12px; gap:.15em}
+.theme-cards .c-num{font-size:30px; line-height:1.1}
 .install-wrap{margin:0 0 20px}
 .install-btn{width:100%; min-height:56px; padding:.5em 1em; border-radius:999px; border:2px solid var(--gold); background:var(--gold); color:var(--ink); font-family:var(--reader); font-weight:700; font-size:20px; cursor:pointer}
 .install-btn:active{transform:translateY(2px)}
@@ -355,7 +441,7 @@ dialog .test{min-height:52px; padding:0 1em; border-radius:999px; border:2px sol
   <button class="listbtn" id="listBtn" aria-label="Choose a spelling list"><span class="lb-label">List 1</span><span class="lb-focus">Short a, i</span></button>
   <header class="marquee">
     <div class="bulbs top" aria-hidden="true"></div>
-    <h1>Spelling Slots</h1>
+    <h1 id="marqueeTitle">Spelling Slots</h1>
     <div class="bulbs bottom" aria-hidden="true"></div>
   </header>
 
@@ -392,7 +478,7 @@ dialog .test{min-height:52px; padding:0 1em; border-radius:999px; border:2px sol
   </section>
 
   <footer class="controls">
-    <div class="tally"><span class="coin" aria-hidden="true"></span><span id="tally">18 words to go</span></div>
+    <div class="tally"><span class="coin" id="tallyIcon" aria-hidden="true"></span><span id="tally">18 words to go</span></div>
     <button class="btn hear" id="hear" disabled>🔊 Hear it</button>
     <button class="btn spin" id="spin">Spin!</button>
     <button class="btn reveal" id="reveal" disabled>👀 Check</button>
@@ -420,6 +506,8 @@ dialog .test{min-height:52px; padding:0 1em; border-radius:999px; border:2px sol
 
 <dialog id="settings">
   <h2>Settings</h2>
+  <p><b>Theme.</b> Pick the look of the machine on this device. It changes right away.</p>
+  <div class="cards theme-cards" id="themeCards"></div>
   <div class="install-wrap" id="installWrap" hidden>
     <button type="button" class="install-btn" id="installBtn">⬇ Install this app on this board</button>
     <p class="install-help">Adds Spelling Slots to this board like a regular program.</p>
@@ -447,9 +535,13 @@ dialog .test{min-height:52px; padding:0 1em; border-radius:999px; border:2px sol
 //  FORCE_LIST = 3  -> always start on List 3, whatever the date.
 //  START_MODE = "speak" -> students say or write the word (normal).
 //  START_MODE = "type"  -> the letter keyboard is open when the app starts.
+//  DEFAULT_THEME sets the look every board starts on: "classic", "space",
+//  "sea" or "circus". A teacher who picks a theme in Settings (the ⚙ button)
+//  overrides this on that one device only; every other board still starts here.
 // =====================================================================
 const FORCE_LIST = 0;
 const START_MODE = "speak";
+const DEFAULT_THEME = "classic";
 
 // Each list starts on its "start" date and stays active until the next list
 // starts. A list with empty dates is never picked by date, but students can
@@ -639,8 +731,39 @@ const LISTS = [
     {w:"reason", s:"Tell me the reason you are sad."} ]}
 ];
 
-const SYMBOLS = ["🍒","⭐","🔔","💎","🍀",'<span class="seven">7</span>',"🍋"];
-const PRAISE_BIG = ["Jackpot!","Awesome!","Super!","Winner!","Yes!"];
+// Each theme only changes looks and wording: the colours live in CSS under
+// body[data-theme="…"], everything here is what the machine shows and says.
+const THEMES = {
+  classic: {
+    name:"Classic", icon:"🎰", desc:"The gold and velvet slot machine.",
+    title:"Spelling Slots", action:"Spin!", tallyIcon:null,
+    symbols:["🍒","⭐","🔔","💎","🍀",'<span class="seven">7</span>',"🍋"],
+    praise:["Jackpot!","Awesome!","Super!","Winner!","Yes!"],
+    confetti:{ colors:["#f5b81c","#ff4fb8","#22c870","#52aaff","#ff5a3c","#ffffff","#b56cff"], primary:"paper", secondary:"coin", float:"down" }
+  },
+  space: {
+    name:"Space Explorer", icon:"🚀", desc:"Blast off past the planets.",
+    title:"Spelling Launch", action:"🚀 Launch!", tallyIcon:"⭐",
+    symbols:["🚀","🪐","⭐","🌙","👽","☄️"],
+    praise:["Blast off!","Stellar!","Out of this world!","Mission complete!"],
+    confetti:{ colors:["#4fd1ff","#ffffff","#ff7847"], primary:"star", secondary:"planet", float:"down" }
+  },
+  sea: {
+    name:"Under the Sea", icon:"🐠", desc:"Dive down to the coral reef.",
+    title:"Spelling Dive", action:"🤿 Dive!", tallyIcon:"🐚",
+    symbols:["🐠","🐬","🐚","🪸","🦀","🐙"],
+    praise:["Splash!","Making waves!","Treasure found!","Reef-tastic!"],
+    confetti:{ colors:["#7ce7e1","#ffffff","#ffe9a8"], primary:"bubble", secondary:"starfish", float:"up" }
+  },
+  circus: {
+    name:"Circus Carnival", icon:"🎪", desc:"Step right up to the big top.",
+    title:"Spelling Circus", action:"🎉 Ta-da!", tallyIcon:"🎟️",
+    symbols:["🎪","🎡","🤡","🎈","🦁","🍿"],
+    praise:["Ta-da!","Showstopper!","Center ring!","Bravo!"],
+    confetti:{ colors:["#e0112f","#ffd400","#1c3fd6"], primary:"ribbon", secondary:"star", float:"down" }
+  }
+};
+const THEME_IDS = Object.keys(THEMES);
 const KEY = "spellingSlots.v3", OLD_KEY = "spellingSlots.v2";
 const RATES = ["0.75","0.9","1"];
 
@@ -655,7 +778,7 @@ document.querySelectorAll(".bulbs").forEach(b => { for (let i = 0; i < 16; i++) 
 // ---------- settings ----------
 function dedupe(list){ const seen = new Set(); return list.filter(o => o.w && !seen.has(o.w) && seen.add(o.w)); }
 function load(){
-  const base = { custom: [], sentences: true, sound: true, voice: "", rate: 0.9, startTyping: null };
+  const base = { custom: [], sentences: true, sound: true, voice: "", rate: 0.9, startTyping: null, theme: null };
   try{
     const s = JSON.parse(localStorage.getItem(KEY));
     if (s) return { ...base, ...s, custom: Array.isArray(s.custom) ? dedupe(s.custom.filter(o => o && typeof o.w === "string")) : [] };
@@ -667,6 +790,23 @@ function load(){
 }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(settings)); }catch(e){} }
 let settings = load();
+
+// ---------- theme ----------
+// settings.theme stays null until someone picks a theme in Settings, so a board
+// that was never touched keeps following DEFAULT_THEME above.
+function themeId(){ return THEMES[settings.theme] ? settings.theme : (THEMES[DEFAULT_THEME] ? DEFAULT_THEME : "classic"); }
+function theme(){ return THEMES[themeId()]; }
+const currentSymbols = () => theme().symbols;
+function applyTheme(){
+  const t = theme();
+  document.body.dataset.theme = themeId();
+  $("marqueeTitle").textContent = t.title;
+  spinBtn.textContent = t.action;
+  $("kbSpin").textContent = t.action;
+  const icon = $("tallyIcon");
+  icon.className = t.tallyIcon ? "tally-emoji" : "coin";
+  icon.textContent = t.tallyIcon || "";
+}
 
 function todayISO(){ const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
 function scheduledIndex(){
@@ -805,8 +945,16 @@ function randFrom(arr, not){
 function seedReels(){
   const ws = wordList();
   render(reels.word, [randFrom(ws), MYSTERY, randFrom(ws)]);
-  [reels.left, reels.right].forEach(r => render(r, [randFrom(SYMBOLS), randFrom(SYMBOLS), randFrom(SYMBOLS)]));
+  reskinSymbolReels();
   Object.values(reels).forEach(r => r.el.style.setProperty("--pos", 1));
+}
+// Only the two picture reels, so a theme change never disturbs the word in play.
+function reskinSymbolReels(){
+  const syms = currentSymbols();
+  [reels.left, reels.right].forEach(r => {
+    render(r, [randFrom(syms), randFrom(syms), randFrom(syms)]);
+    r.el.style.setProperty("--pos", 1);
+  });
 }
 let lastTick = 0;
 function runReel(reel, src, n, dur, final){
@@ -884,11 +1032,12 @@ async function spin(){
   const fillers = others.length ? others : ["★"];
   // Replace the old center cell so the reel starts from a normal state.
   render(reels.word, reels.word.items.map(it => it === MYSTERY || it === target ? randFrom(fillers) : it));
-  const sym = randFrom(SYMBOLS);
+  const syms = currentSymbols();
+  const sym = randFrom(syms);
   const k = matchMedia("(prefers-reduced-motion: reduce)").matches ? .55 : 1;
   await Promise.all([
-    runReel(reels.left, SYMBOLS, 14, 1500*k, sym),
-    runReel(reels.right, SYMBOLS, 19, 2150*k, sym),
+    runReel(reels.left, syms, 14, 1500*k, sym),
+    runReel(reels.right, syms, 19, 2150*k, sym),
     runReel(reels.word, fillers, 26, 3000*k, MYSTERY)
   ]);
   land(target);
@@ -941,7 +1090,8 @@ if (document.fonts && document.fonts.load) document.fonts.load('700 100px Andika
 function celebrate(word, finale){
   partyOn = true; partyOpenedAt = performance.now();
   const big = $("big");
-  big.textContent = finale ? "All done!" : PRAISE_BIG[Math.floor(Math.random()*PRAISE_BIG.length)];
+  const praise = theme().praise;
+  big.textContent = finale ? "All done!" : praise[Math.floor(Math.random()*praise.length)];
   big.style.animation = "none"; void big.offsetWidth; big.style.animation = "";
   $("letters").replaceChildren(...[...word].map((ch, i) => {
     const s = document.createElement("span"), b = document.createElement("b");
@@ -1052,18 +1202,40 @@ $("typeSettingsBtn").addEventListener("click", openSettings);
 // ---------- confetti ----------
 const cv = $("confetti"), ctx = cv.getContext("2d");
 let parts = [], raf = null;
-const COLORS = ["#f5b81c","#ff4fb8","#22c870","#52aaff","#ff5a3c","#ffffff","#b56cff"];
 const rnd = (a, b) => a + Math.random()*(b - a);
+function starPath(outer, inner, points){
+  ctx.beginPath();
+  for (let i = 0; i < points*2; i++){
+    const r = i % 2 ? inner : outer, a = (Math.PI/points)*i - Math.PI/2;
+    const x = Math.cos(a)*r, y = Math.sin(a)*r;
+    i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+  }
+  ctx.closePath();
+}
 function burst(){
+  const cfg = theme().confetti;
+  const up = cfg.float === "up";
   const dpr = Math.min(2, window.devicePixelRatio || 1), W = innerWidth, H = innerHeight;
   cv.width = W*dpr; cv.height = H*dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   const scale = Math.max(1, H / 700);
+  const make = (kind, x, y, vx, vy, c) => {
+    const p = { kind, x, y, vx, vy, c, dir: up ? -1 : 1, flip: rnd(0, 6) };
+    if (kind === "paper") return { ...p, w: rnd(8, 14)*scale, h: rnd(12, 22)*scale, r: rnd(0, 6), vr: rnd(-.3, .3) };
+    if (kind === "ribbon") return { ...p, w: rnd(6, 9)*scale, h: rnd(22, 36)*scale, r: rnd(0, 6), vr: rnd(-.3, .3) };
+    if (kind === "star" || kind === "starfish") return { ...p, rad: rnd(10, 18)*scale, r: rnd(0, 6), vr: rnd(-.3, .3) };
+    if (kind === "bubble") return { ...p, rad: rnd(8, 20)*scale, vf: rnd(.05, .15), term: -rnd(2.5, 7)*scale };
+    return { ...p, rad: rnd(14, 26)*scale, vf: rnd(.08, .2) };
+  };
   for (let i = 0; i < 90; i++){
-    [0, 1].forEach(side => parts.push({ kind:"paper", x: side ? W : 0, y: H*.95, vx: (side ? -1 : 1) * rnd(5, 17) * scale, vy: rnd(-26, -12) * scale,
-      w: rnd(8, 14)*scale, h: rnd(12, 22)*scale, r: rnd(0, 6), vr: rnd(-.3, .3), c: COLORS[i % COLORS.length], flip: rnd(0, 6) }));
+    const c = cfg.colors[i % cfg.colors.length];
+    // Rising themes start along the whole floor; falling ones shoot in from the corners.
+    if (up) for (let j = 0; j < 2; j++) parts.push(make(cfg.primary, rnd(0, W), H + rnd(10, 240), rnd(-1.6, 1.6), -rnd(3, 9)*scale, c));
+    else [0, 1].forEach(side => parts.push(make(cfg.primary, side ? W : 0, H*.95,
+      (side ? -1 : 1) * rnd(5, 17) * scale, rnd(-26, -12)*scale, c)));
   }
   for (let i = 0; i < 45; i++){
-    parts.push({ kind:"coin", x: rnd(0, W), y: rnd(-H*.8, -20), vx: rnd(-1.5, 1.5), vy: rnd(3, 8)*scale, rad: rnd(14, 26)*scale, flip: rnd(0, 6), vf: rnd(.08, .2) });
+    parts.push(make(cfg.secondary, rnd(0, W), up ? rnd(H + 20, H*1.8) : rnd(-H*.8, -20),
+      rnd(-1.5, 1.5), up ? -rnd(3, 8)*scale : rnd(3, 8)*scale, cfg.colors[(i + 1) % cfg.colors.length]));
   }
   if (!raf) raf = requestAnimationFrame(loop);
 }
@@ -1071,10 +1243,31 @@ function loop(){
   const W = innerWidth, H = innerHeight;
   ctx.clearRect(0, 0, W, H);
   for (const p of parts){
-    if (p.kind === "paper"){
-      p.vx *= .985; p.vy = Math.min(p.vy + .45, 5); p.x += p.vx; p.y += p.vy; p.r += p.vr; p.flip += .15;
+    if (p.kind === "paper" || p.kind === "ribbon"){
+      p.vx *= .985; p.vy = p.dir < 0 ? Math.max(p.vy - .45, -6.5) : Math.min(p.vy + .45, 5);
+      p.x += p.vx; p.y += p.vy; p.r += p.vr; p.flip += .15;
       ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r); ctx.scale(1, Math.cos(p.flip));
       ctx.fillStyle = p.c; ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h); ctx.restore();
+    } else if (p.kind === "star" || p.kind === "starfish"){
+      p.vx *= .985; p.vy = p.dir < 0 ? Math.max(p.vy - .45, -6.5) : Math.min(p.vy + .45, 5);
+      p.x += p.vx; p.y += p.vy; p.r += p.vr; p.flip += .12;
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r); ctx.scale(1, Math.cos(p.flip));
+      ctx.fillStyle = p.c; starPath(p.rad, p.rad * (p.kind === "starfish" ? .55 : .42), 5); ctx.fill(); ctx.restore();
+    } else if (p.kind === "bubble"){
+      p.vy = Math.max(p.vy - .18, p.term); p.x += p.vx + Math.sin(p.flip)*.6; p.y += p.vy; p.flip += p.vf;
+      ctx.save(); ctx.translate(p.x, p.y);
+      ctx.globalAlpha = .5; ctx.beginPath(); ctx.arc(0, 0, p.rad, 0, Math.PI*2); ctx.fillStyle = p.c; ctx.fill();
+      ctx.globalAlpha = .9; ctx.lineWidth = 2; ctx.strokeStyle = "#ffffff"; ctx.stroke();
+      ctx.beginPath(); ctx.arc(-p.rad*.32, -p.rad*.32, p.rad*.22, 0, Math.PI*2); ctx.fillStyle = "rgba(255,255,255,.85)"; ctx.fill();
+      ctx.restore();
+    } else if (p.kind === "planet"){
+      p.vy += .25; p.x += p.vx; p.y += p.vy; p.flip += p.vf;
+      const sx = Math.abs(Math.cos(p.flip)) + .08;
+      ctx.save(); ctx.translate(p.x, p.y); ctx.scale(sx, 1);
+      ctx.beginPath(); ctx.arc(0, 0, p.rad*.62, 0, Math.PI*2); ctx.fillStyle = p.c; ctx.fill();
+      ctx.beginPath(); ctx.ellipse(0, 0, p.rad*1.15, p.rad*.34, 0, 0, Math.PI*2);
+      ctx.lineWidth = 3; ctx.strokeStyle = p.c; ctx.globalAlpha = .65; ctx.stroke();
+      ctx.restore();
     } else {
       p.vy += .25; p.x += p.vx; p.y += p.vy; p.flip += p.vf;
       const sx = Math.abs(Math.cos(p.flip)) + .08;
@@ -1085,7 +1278,7 @@ function loop(){
       ctx.restore();
     }
   }
-  parts = parts.filter(p => p.y < H + 80 && p.x > -120 && p.x < W + 120);
+  parts = parts.filter(p => p.x > -120 && p.x < W + 120 && (p.dir < 0 ? p.y > -120 : p.y < H + 80));
   raf = parts.length ? requestAnimationFrame(loop) : (ctx.clearRect(0, 0, W, H), null);
 }
 
@@ -1136,8 +1329,22 @@ function fillVoices(){
   if (!vs.length){ const o = document.createElement("option"); o.textContent = "No English voices found"; o.value = ""; sel.appendChild(o); }
   if (keep && vs.some(v => v.name === keep)) sel.value = keep;
 }
+function renderThemeCards(){
+  const active = themeId();
+  $("themeCards").replaceChildren(...THEME_IDS.map(id => {
+    const t = THEMES[id];
+    const c = document.createElement("button");
+    c.type = "button";
+    c.className = "card" + (id === active ? " active" : "");
+    const add = (cls, text) => { const e = document.createElement("span"); e.className = cls; e.textContent = text; c.appendChild(e); };
+    add("c-num", t.icon); add("c-focus", t.name); add("c-words", t.desc);
+    c.addEventListener("click", () => { settings.theme = id; save(); applyTheme(); reskinSymbolReels(); renderThemeCards(); });
+    return c;
+  }));
+}
 function openSettings(){
   if (spinning || partyOn) return;
+  renderThemeCards();
   $("wordsInput").value = toText(settings.custom);
   $("sentenceInput").checked = settings.sentences; $("soundInput").checked = settings.sound; $("err").textContent = "";
   $("typingInput").checked = settings.startTyping ?? (START_MODE === "type");
@@ -1159,7 +1366,8 @@ $("saveSettings").addEventListener("click", () => {
   const changed = custom.map(o => o.w).join("|") !== settings.custom.map(o => o.w).join("|");
   settings = { custom, sentences: $("sentenceInput").checked, sound: $("soundInput").checked,
     voice: $("voiceInput").value || "", rate: parseFloat($("rateInput").value) || 0.9,
-    startTyping: $("typingInput").checked === (START_MODE === "type") ? null : $("typingInput").checked };
+    startTyping: $("typingInput").checked === (START_MODE === "type") ? null : $("typingInput").checked,
+    theme: settings.theme };
   save();
   setMode($("typingInput").checked);
   voice = chooseVoice(settings.voice);
@@ -1234,6 +1442,7 @@ document.addEventListener("keydown", e => {
   else if (k === "h" && currentWord) speakSeq(wordParts(currentWord, false));
 });
 
+applyTheme();
 seedReels(); updateTally(); updateButtons(); updateListBtn();
 setMode(settings.startTyping ?? (START_MODE === "type"));
 })();
